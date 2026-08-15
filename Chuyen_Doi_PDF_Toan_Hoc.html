@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trợ Lý Số Hóa Tài Liệu Giáo Dục & Toán Học</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+  <!-- Load config từ phần mềm Desktop -->
+  <script src="activation_status.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .katex { font-size: 1.1em; }
+    .word-table { border-collapse: collapse; width: 100%; margin: 10pt 0; border: 1pt solid #475569; }
+    .word-table td, .word-table th { border: 1pt solid #475569; padding: 6px 10px; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen p-4 md:p-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- HEADER -->
+    <header class="mb-6 text-center">
+      <div class="inline-flex items-center justify-center p-3 bg-blue-600 rounded-2xl mb-3 shadow-lg shadow-blue-200 text-white">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      </div>
+      <h1 class="text-3xl font-bold tracking-tight text-slate-800">Trợ Lý Số Hóa Tài Liệu Giáo Dục & Toán Học</h1>
+      <p class="text-slate-500 mt-2 font-medium">
+        AI phân tích ảnh, xuất Bảng và Toán học chuẩn LaTeX.
+      </p>
+      
+      <div class="mt-4 flex flex-wrap items-center justify-center gap-3">
+        <button id="btnOpenKeyModal" class="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-300 rounded-2xl shadow-sm text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all">
+          <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+          <span id="keyStatusText">⚙️ Cài đặt Gemini API & Models</span>
+        </button>
+        <button id="btnOpenPlanModal" class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl shadow-sm text-sm font-bold text-white hover:opacity-90 transition-all">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span id="currentPlanText">Gói Dùng Thử</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- MODAL CHỌN GÓI -->
+    <div id="planModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl p-6 max-w-2xl w-full shadow-2xl transition-all max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+            <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            Nâng cấp Tài Khoản
+          </h3>
+          <button id="btnClosePlanModal" class="text-slate-400 hover:text-slate-600 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Gói Dùng Thử -->
+          <div class="border-2 border-slate-200 rounded-2xl p-5 hover:border-slate-300 transition-all relative">
+            <h4 class="text-lg font-bold text-slate-800 mb-2">Gói Dùng Thử</h4>
+            <div class="text-3xl font-bold text-slate-800 mb-4">Miễn phí</div>
+            <ul class="space-y-2 mb-6 text-sm text-slate-600">
+              <li class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Số hóa cơ bản</li>
+              <li class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Xuất file Toán cơ bản</li>
+              <li class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Tốc độ xử lý tiêu chuẩn</li>
+              <li class="flex items-center gap-2 opacity-50"><svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg> Không có tính năng cao cấp</li>
+            </ul>
+            <button class="w-full py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold hover:bg-slate-200 transition-all" onclick="selectPlan('trial')">Đang Sử Dụng</button>
+          </div>
+          
+          <!-- Gói Pro -->
+          <div class="border-2 border-blue-500 rounded-2xl p-5 bg-blue-50 relative overflow-hidden shadow-lg shadow-blue-100">
+            <div class="absolute top-0 right-0 bg-blue-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl">PHỔ BIẾN</div>
+            <h4 class="text-lg font-bold text-blue-800 mb-2 flex items-center gap-2">Gói Pro <svg class="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg></h4>
+            <div class="text-3xl font-bold text-blue-900 mb-1">299.000đ<span class="text-sm font-normal text-blue-600"> / tháng</span></div>
+            <div class="text-xs text-blue-600 mb-4">Mở khóa toàn bộ tính năng</div>
+            <ul class="space-y-2 mb-6 text-sm text-blue-800">
+              <li class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Số hóa <b>không giới hạn</b></li>
+              <li class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Xuất Toán chuẩn 100% LaTeX</li>
+              <li class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Tốc độ xử lý siêu tốc (Flash)</li>
+              <li class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Hỗ trợ nhận diện ảnh mờ, mờ nhòe</li>
+              <li class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Hỗ trợ ưu tiên 24/7</li>
+            </ul>
+            <button class="w-full py-2.5 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-300" onclick="selectPlan('pro')">Nâng Cấp Ngay</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL KÍCH HOẠT PRO -->
+    <div id="activationModal" class="hidden fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl transition-all">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+            Kích Hoạt Gói Pro
+          </h3>
+          <button id="btnCloseActivationModal" class="text-slate-400 hover:text-slate-600 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-bold text-slate-700 mb-1">Mã Máy (Copy gửi cho Admin):</label>
+          <div class="flex items-center gap-2">
+            <input type="text" id="displayMachineId" class="w-full p-2.5 bg-slate-100 border border-slate-300 rounded-xl text-sm font-mono text-center font-bold text-blue-700" readonly>
+            <button onclick="copyMachineId()" class="p-2.5 bg-blue-100 text-blue-700 rounded-xl hover:bg-blue-200" title="Copy mã máy">
+              📋
+            </button>
+          </div>
+        </div>
+
+        <div class="mb-4 p-4 bg-blue-50 border border-blue-100 rounded-2xl">
+          <p class="text-sm text-blue-800 font-medium mb-3">Thanh toán để nhận mã kích hoạt (Zalo: 0988250112)</p>
+          <div class="flex items-center justify-center bg-white p-3 rounded-xl mb-1 border border-blue-100 shadow-sm">
+            <div class="text-center">
+               <div class="w-32 h-32 bg-slate-100 mx-auto rounded-lg border-2 border-dashed border-slate-300 flex items-center justify-center mb-2">
+                  <span class="text-slate-400 text-xs text-center px-2">Ngân Hàng<br>MB Bank</span>
+               </div>
+               <div class="font-bold text-lg text-blue-600">0988250112</div>
+               <div class="text-sm font-medium text-slate-700">Tên: Nguyen Van Thien</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-bold text-slate-700 mb-2">Nhập Mã Kích Hoạt:</label>
+          <input type="text" id="inputActivationKey" class="w-full p-3 border border-slate-300 rounded-xl text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all uppercase placeholder-slate-400" placeholder="VD: PDFWEB-XXXXX-XXXXX">
+        </div>
+        
+        <button id="btnSubmitActivation" class="w-full mt-4 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-300 flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Xác Nhận Kích Hoạt
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL CÀI ĐẶT API & MODELS -->
+    <div id="keyModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl p-6 max-w-xl w-full shadow-2xl transition-all max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Cài đặt Gemini API & Models
+          </h3>
+          <span id="keyCountBadge" class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-bold">0 Key</span>
+        </div>
+        
+        <div class="bg-blue-50 border border-blue-200 text-blue-800 p-3 rounded-2xl text-xs mb-3 space-y-1">
+          <p class="font-bold flex items-center gap-1">
+            💡 Lưu ý về định dạng API Key Google Gemini:
+          </p>
+          <p>
+            API Key chính thức từ <b>Google AI Studio (aistudio.google.com)</b> luôn bắt đầu bằng chữ <code class="bg-white px-1.5 py-0.5 rounded font-mono font-bold text-rose-600">AIzaSy...</code>
+          </p>
+          <p class="text-[11px] text-blue-600">
+            (Nếu bạn copy chuỗi bắt đầu bằng AQ... từ trang quản lý dự án Cloud, hãy vào <b>Google AI Studio -> Get API Key</b> để lấy key chuẩn AIzaSy nhé).
+          </p>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1.5">Danh sách Gemini API Keys (AIzaSy...):</label>
+            <textarea id="inputApiKey" class="w-full p-3 border border-slate-300 rounded-2xl text-xs font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" rows="3" placeholder="AIzaSy...&#10;AIzaSy... (Nhập nhiều key, mỗi key 1 dòng hoặc cách nhau dấu phẩy)"></textarea>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Model OCR Nhận diện:</label>
+              <select id="selectModelName" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-semibold outline-none bg-white">
+                <option value="gemini-3.5-flash">🌟 gemini-3.5-flash (Model Mới Nhất 2026)</option>
+                <option value="gemini-3.0-flash">🚀 gemini-3.0-flash (Thế hệ 3.0 Siêu Nhanh)</option>
+                <option value="gemini-3.1-flash-lite">⚡ gemini-3.1-flash-lite (Hạn ngạch Quota cực cao)</option>
+                <option value="gemini-3.6-flash">✨ gemini-3.6-flash (Mới ra mắt)</option>
+                <option value="gemini-2.0-flash">💎 gemini-2.0-flash (Ổn định, Đọc toán cực tốt)</option>
+                <option value="gemini-1.5-flash">🔹 gemini-1.5-flash (Chuẩn Google)</option>
+                <option value="gemini-1.5-pro">🧠 gemini-1.5-pro (Đọc đề chữ mờ / khó)</option>
+                <option value="auto">🔄 Tự động xoay vòng Model (Auto Fallback)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Model Giải toán / Tối ưu:</label>
+              <select id="selectSolveModel" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-semibold outline-none bg-white">
+                <option value="gemini-3.5-flash">gemini-3.5-flash</option>
+                <option value="gemini-3.0-flash">gemini-3.0-flash</option>
+                <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+                <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- KẾT QUẢ KIỂM TRA API -->
+          <div id="testResultBox" class="hidden p-3.5 rounded-2xl text-xs transition-all"></div>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 flex justify-between items-center gap-3">
+          <button id="btnTestApi" class="px-4 py-2.5 border border-rose-600 text-rose-600 hover:bg-rose-50 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <span id="btnTestApiText">Kiểm tra kết nối</span>
+          </button>
+          
+          <div class="flex gap-2">
+            <button id="btnCloseKeyModal" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-100">Đóng</button>
+            <button id="btnSaveKeyModal" class="px-6 py-2.5 bg-rose-600 text-white rounded-xl text-sm font-bold shadow-md hover:bg-rose-700 transition-all">Xong & Lưu</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- LEFT -->
+      <div class="lg:col-span-5 space-y-6 flex flex-col h-full">
+        <!-- DROPZONE -->
+        <div id="dropzone" class="relative border-2 border-dashed border-slate-300 bg-white rounded-3xl p-8 transition-all text-center cursor-pointer hover:border-blue-400 hover:bg-slate-50">
+          <input type="file" id="fileInput" class="hidden" accept="image/*,application/pdf" multiple>
+          <div class="flex flex-col items-center pointer-events-none">
+            <div class="p-4 bg-white rounded-full shadow-sm mb-4">
+              <svg class="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-700">Nhấn, kéo thả PDF hoặc Paste ảnh (Ctrl+V)</h3>
+            <p class="text-sm text-slate-500 mt-1">Hỗ trợ PDF và ảnh nhiều trang</p>
+          </div>
+          <button id="btnClearFiles" class="hidden absolute top-4 right-4 p-2 bg-white rounded-full text-slate-400 hover:text-red-500 shadow-sm" title="Xóa tất cả">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          </button>
+        </div>
+
+        <!-- CHẾ ĐỘ -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+          <h4 class="text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">✨ Chọn chế độ nhận diện</h4>
+          <div class="grid grid-cols-1 gap-2">
+            <button id="modeOriginal" class="mode-btn px-4 py-3 rounded-xl text-sm font-medium text-left transition-all border bg-blue-50 border-blue-300 text-blue-700 font-bold">
+              📄 <b>Số hóa nguyên bản</b> (Khuyên dùng cho đề thi)
+            </button>
+            <button id="modeClean" class="mode-btn px-4 py-3 rounded-xl text-sm font-medium text-left transition-all border bg-white border-slate-100 text-slate-600 hover:bg-slate-50">
+              ✨ <b>Làm sạch đề</b> (Xóa vết khoanh tay, vẽ bậy)
+            </button>
+            <button id="modeAnswer" class="mode-btn px-4 py-3 rounded-xl text-sm font-medium text-left transition-all border bg-white border-slate-100 text-slate-600 hover:bg-slate-50">
+              📊 <b>Chỉ lấy Bảng đáp án</b> (Bỏ qua câu hỏi)
+            </button>
+          </div>
+        </div>
+
+        <!-- PREVIEW THUMBNAILS -->
+        <div id="previewContainer" class="hidden bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex-grow flex flex-col">
+          <div class="flex items-center justify-between mb-3">
+            <h4 id="previewTitle" class="font-bold text-sm text-slate-700">Trang tài liệu (0)</h4>
+          </div>
+          <div id="thumbnailsList" class="flex gap-4 overflow-x-auto pb-2 snap-x"></div>
+          <div class="mt-4 flex gap-2">
+            <button id="btnStartOCR" class="flex-grow bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white px-6 py-3.5 rounded-xl font-bold text-base transition-all flex justify-center items-center gap-2 shadow-lg shadow-blue-200">
+              ⚡ BẮT ĐẦU CHUYỂN ĐỔI
+            </button>
+            <button id="btnCancelOCR" class="hidden bg-red-500 hover:bg-red-600 text-white px-4 py-3.5 rounded-xl font-bold transition-all shadow-lg shadow-red-200" title="Dừng">
+              ⏹ Dừng
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="lg:col-span-7 h-full flex flex-col">
+        <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 h-full flex flex-col overflow-hidden min-h-[600px]">
+          
+          <div class="bg-slate-50 border-b border-slate-100 p-4 px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-2 bg-slate-200/60 p-1.5 rounded-xl">
+              <button id="tabEdit" class="px-4 py-2 rounded-lg text-sm font-bold transition-all bg-white text-blue-600 shadow-sm">Code LaTeX</button>
+              <button id="tabPreview" class="px-4 py-2 rounded-lg text-sm font-bold transition-all text-slate-500 hover:text-slate-700">Xem trước KaTeX</button>
+            </div>
+
+            <div class="flex gap-2 flex-wrap justify-end">
+              <button id="btnCopy" class="p-2.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 bg-white border border-slate-200 rounded-xl" title="Sao chép">📋</button>
+              <button id="btnWordImg" class="hidden bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-xl text-xs font-bold shadow-sm" title="Vẽ công thức thành ảnh tĩnh">🖼️ Word (Ảnh)</button>
+              <button id="btnWordLatex" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm flex items-center gap-2" title="LaTeX">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Xuất Word (LaTeX)
+              </button>
+              <button id="btnWordLegacy" class="hidden bg-rose-600 hover:bg-rose-700 text-white px-3 py-2 rounded-xl text-xs font-bold shadow-sm" title="Equation OMML">📜 Word (Equation)</button>
+            </div>
+          </div>
+
+          <div id="progressBarContainer" class="hidden w-full bg-slate-100 h-1 overflow-hidden">
+            <div id="progressBar" class="bg-blue-600 h-full transition-all duration-300 w-0"></div>
+          </div>
+
+          <div id="statusAlert" class="hidden mx-6 mt-4 p-3 rounded-xl text-sm font-medium flex items-center gap-2 shadow-sm bg-blue-50 text-blue-700 border border-blue-100"></div>
+
+          <div class="flex-grow p-6 bg-slate-50 relative flex flex-col">
+            <textarea id="resultEditor" class="w-full flex-grow min-h-[500px] p-5 bg-white border border-slate-200 rounded-2xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 text-slate-800 font-mono text-[14px] leading-relaxed shadow-inner" placeholder="Kết quả nhận diện sẽ xuất hiện tại đây..."></textarea>
+            <div id="resultPreview" class="hidden w-full flex-grow min-h-[500px] max-h-[650px] p-6 bg-white border border-slate-200 rounded-2xl overflow-y-auto text-slate-800 text-[16px] font-serif leading-relaxed shadow-sm"></div>
+            <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-slate-300 pointer-events-none z-10">
+              <svg class="w-16 h-16 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+              <p class="text-base font-medium">Bản thảo trống</p>
+              <p class="text-sm mt-1">Tải ảnh/PDF lên và bấm BẮT ĐẦU CHUYỂN ĐỔI</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    if (window.pdfjsLib) {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+    }
+
+    const state = {
+      apiKey: localStorage.getItem('gemini_api_key') || '',
+      modelName: localStorage.getItem('gemini_model_name') || 'gemini-3.5-flash',
+      solveModelName: localStorage.getItem('gemini_solve_model') || 'gemini-3.5-flash',
+      previewUrls: [],
+      fileNames: [],
+      isProcessing: false,
+      processingMode: 'original',
+      extractedImages: {},
+      cancelRequested: false,
+      currentKeyIndex: 0
+    };
+
+    const inputApiKey = document.getElementById('inputApiKey');
+    const selectModelName = document.getElementById('selectModelName');
+    const selectSolveModel = document.getElementById('selectSolveModel');
+    const keyModal = document.getElementById('keyModal');
+    const keyStatusText = document.getElementById('keyStatusText');
+    const keyCountBadge = document.getElementById('keyCountBadge');
+    const btnTestApi = document.getElementById('btnTestApi');
+    const btnTestApiText = document.getElementById('btnTestApiText');
+    const testResultBox = document.getElementById('testResultBox');
+
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const previewContainer = document.getElementById('previewContainer');
+    const thumbnailsList = document.getElementById('thumbnailsList');
+    const previewTitle = document.getElementById('previewTitle');
+    const btnClearFiles = document.getElementById('btnClearFiles');
+    const btnStartOCR = document.getElementById('btnStartOCR');
+    const btnCancelOCR = document.getElementById('btnCancelOCR');
+    const resultEditor = document.getElementById('resultEditor');
+    const resultPreview = document.getElementById('resultPreview');
+    const emptyState = document.getElementById('emptyState');
+    const tabEdit = document.getElementById('tabEdit');
+    const tabPreview = document.getElementById('tabPreview');
+    const statusAlert = document.getElementById('statusAlert');
+    const progressBarContainer = document.getElementById('progressBarContainer');
+    const progressBar = document.getElementById('progressBar');
+
+    const savedDraft = localStorage.getItem('draft_ocr_result');
+    if (savedDraft) {
+      resultEditor.value = savedDraft;
+      emptyState.classList.add('hidden');
+    }
+
+    function parseApiKeys(str) {
+      return (str || '').replace(/\r\n|\r|\n/g, ',').split(',').map(k => k.trim()).filter(Boolean);
+    }
+
+    function updateKeyStatus() {
+      const keys = parseApiKeys(state.apiKey);
+      if (keys.length > 0) {
+        keyStatusText.textContent = `⚙️ Gemini API (${keys.length} Key sẵn sàng)`;
+        keyCountBadge.textContent = `${keys.length} Key`;
+        keyCountBadge.className = 'text-xs bg-green-100 text-green-700 px-2.5 py-1 rounded-full font-bold';
+      } else {
+        keyStatusText.textContent = '🔑 Nhập Gemini API Key';
+        keyCountBadge.textContent = '0 Key';
+        keyCountBadge.className = 'text-xs bg-red-100 text-red-700 px-2.5 py-1 rounded-full font-bold';
+      }
+    }
+    updateKeyStatus();
+
+    // Modal API Key
+    document.getElementById('btnOpenKeyModal').onclick = () => {
+      inputApiKey.value = state.apiKey;
+      selectModelName.value = state.modelName;
+      selectSolveModel.value = state.solveModelName;
+      testResultBox.classList.add('hidden');
+      keyModal.classList.remove('hidden');
+    };
+    document.getElementById('btnCloseKeyModal').onclick = () => keyModal.classList.add('hidden');
+    document.getElementById('btnSaveKeyModal').onclick = () => {
+      state.apiKey = inputApiKey.value.trim();
+      state.modelName = selectModelName.value;
+      state.solveModelName = selectSolveModel.value;
+      localStorage.setItem('gemini_api_key', state.apiKey);
+      localStorage.setItem('gemini_model_name', state.modelName);
+      localStorage.setItem('gemini_solve_model', state.solveModelName);
+      keyModal.classList.add('hidden');
+      updateKeyStatus();
+      showStatus('success', 'Đã lưu cấu hình API Key và Models!');
+    };
+
+    // ============================================================
+    // LOGIC KIỂM TRA TỰ ĐỘNG CHUẨN GEMINI API
+    // ============================================================
+    async function testSingleApiKey(apiKey, requestedModel) {
+      // Danh sách các model fallback để tự động tìm model tốt nhất nếu 1 model chưa mở
+      const fallbackList = (requestedModel === 'auto')
+        ? ['gemini-3.5-flash', 'gemini-3.0-flash', 'gemini-3.1-flash-lite', 'gemini-2.0-flash', 'gemini-1.5-flash']
+        : [requestedModel, 'gemini-2.0-flash', 'gemini-1.5-flash'];
+
+      let lastErr = null;
+      for (const m of fallbackList) {
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${apiKey}`;
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: 'Trả lời đúng một từ: OK' }] }]
+            })
+          });
+
+          const data = await res.json();
+          if (res.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+            return { ok: true, workingModel: m };
+          }
+          if (data.error) {
+            lastErr = data.error.message;
+            // Nếu lỗi là do sai Key (400/403/API_KEY_INVALID) thì dừng ngay
+            if (res.status === 400 || res.status === 403 || lastErr.includes('API key')) {
+              throw new Error(lastErr);
+            }
+          }
+        } catch (e) {
+          lastErr = e.message;
+        }
+      }
+      throw new Error(lastErr || 'Không kết nối được tới Gemini API');
+    }
+
+    btnTestApi.onclick = async () => {
+      const keys = parseApiKeys(inputApiKey.value);
+      if (!keys.length) {
+        testResultBox.className = 'p-3.5 rounded-2xl text-xs bg-red-50 text-red-700 border border-red-200 block';
+        testResultBox.innerHTML = '❌ <b>Thiếu API Key:</b> Vui lòng nhập ít nhất 1 API Key bắt đầu bằng AIzaSy...';
+        return;
+      }
+
+      btnTestApi.disabled = true;
+      btnTestApiText.textContent = 'Đang kiểm tra...';
+      testResultBox.className = 'p-3.5 rounded-2xl text-xs bg-blue-50 text-blue-700 border border-blue-200 block';
+      testResultBox.innerHTML = `⏳ Đang gửi yêu cầu kiểm tra kết nối tới ${keys.length} API Key...`;
+
+      const validKeys = [];
+      const invalidKeys = [];
+      const modelToTest = selectModelName.value;
+
+      for (let i = 0; i < keys.length; i++) {
+        const k = keys[i];
+        try {
+          const result = await testSingleApiKey(k, modelToTest);
+          if (result.ok) {
+            validKeys.push({ key: k, model: result.workingModel });
+          }
+        } catch (e) {
+          invalidKeys.push({ key: k, error: e.message });
+        }
+      }
+
+      btnTestApi.disabled = false;
+      btnTestApiText.textContent = 'Kiểm tra kết nối';
+
+      if (validKeys.length === keys.length) {
+        testResultBox.className = 'p-3.5 rounded-2xl text-xs bg-green-50 text-green-700 border border-green-200 block font-medium leading-relaxed';
+        testResultBox.innerHTML = `✅ <b>Kết nối thành công!</b> Tất cả <b>${validKeys.length}/${keys.length} Key</b> đều hoạt động xuất sắc (Model: <b>${validKeys[0].model}</b>).`;
+      } else if (validKeys.length > 0) {
+        testResultBox.className = 'p-3.5 rounded-2xl text-xs bg-amber-50 text-amber-800 border border-amber-200 block leading-relaxed';
+        testResultBox.innerHTML = `⚠️ <b>Kết quả:</b> Hoạt động <b>${validKeys.length}/${keys.length} Key</b>.<br>Có ${invalidKeys.length} Key bị lỗi (Hệ thống sẽ tự động bỏ qua các Key lỗi này khi chuyển đổi).`;
+      } else {
+        testResultBox.className = 'p-3.5 rounded-2xl text-xs bg-red-50 text-red-700 border border-red-200 block leading-relaxed';
+        testResultBox.innerHTML = `❌ <b>Tất cả ${keys.length} Key đều lỗi:</b><br><span class="font-mono">${invalidKeys[0]?.error || 'Lỗi kết nối API'}</span>`;
+      }
+    };
+
+    // Drag & Drop Handling
+    const dropZone = document.getElementById('dropzone');
+    
+    // Mở selector file
+    dropZone.onclick = () => { if(ensureActivated()) fileInput.click(); };
+    fileInput.onchange = (e) => {
+      if (!ensureActivated()) { e.target.value = ''; return; }
+      handleFiles(Array.from(e.target.files));
+    };
+
+    dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('border-blue-500', 'bg-blue-50/50'); };
+    dropZone.ondragleave = (e) => { e.preventDefault(); dropZone.classList.remove('border-blue-500', 'bg-blue-50/50'); };
+    dropZone.ondrop = (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('border-blue-500', 'bg-blue-50/50');
+      if (!ensureActivated()) return;
+      if (!state.isProcessing && e.dataTransfer.files) handleFiles(Array.from(e.dataTransfer.files));
+    };
+
+    // Paste handling
+    window.addEventListener('paste', e => {
+      if (!ensureActivated()) return;
+      if (state.isProcessing || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      const files = [];
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].kind === 'file') {
+          const f = items[i].getAsFile();
+          if (f && (f.type.startsWith('image/') || f.type === 'application/pdf')) {
+            const ext = f.type === 'application/pdf' ? '.pdf' : '.png';
+            files.push(new File([f], `Pasted_${Date.now()}_${i}${ext}`, { type: f.type }));
+          }
+        }
+      }
+      if (files.length > 0) { e.preventDefault(); handleFiles(files); }
+    });
+
+    async function handleFiles(files) {
+      if (!files.length) return;
+      showStatus('info', 'Đang đọc và tạo ảnh từng trang...');
+      state.isProcessing = true;
+
+      for (const file of files) {
+        state.fileNames.push(file.name);
+        if (file.type.startsWith('image/')) {
+          const url = await new Promise(r => {
+            const rd = new FileReader();
+            rd.onload = (e) => r(e.target.result);
+            rd.readAsDataURL(file);
+          });
+          state.previewUrls.push(url);
+        } else if (file.type === 'application/pdf') {
+          const arrayBuffer = await file.arrayBuffer();
+          const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const viewport = page.getViewport({ scale: 2.2 });
+            const canvas = document.createElement('canvas');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+            state.previewUrls.push(canvas.toDataURL('image/jpeg', 0.9));
+          }
+        }
+      }
+
+      state.isProcessing = false;
+      renderThumbnails();
+      showStatus('success', `Đã nạp ${state.previewUrls.length} trang tài liệu thành công.`);
+    }
+
+    function renderThumbnails() {
+      if (!state.previewUrls.length) {
+        previewContainer.classList.add('hidden');
+        btnClearFiles.classList.add('hidden');
+        return;
+      }
+      previewContainer.classList.remove('hidden');
+      btnClearFiles.classList.remove('hidden');
+      previewTitle.textContent = `Trang tài liệu (${state.previewUrls.length})`;
+
+      thumbnailsList.innerHTML = '';
+      state.previewUrls.forEach((url, idx) => {
+        const item = document.createElement('div');
+        item.className = 'shrink-0 w-28 h-40 border rounded-lg overflow-hidden bg-slate-100 snap-start shadow-sm relative group';
+        item.innerHTML = `
+          <img src="${url}" class="w-full h-full object-cover transition-transform group-hover:scale-105" />
+          <div class="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[10px] text-center py-1">
+            Trang ${idx + 1}
+          </div>
+        `;
+        thumbnailsList.appendChild(item);
+      });
+    }
+
+    btnClearFiles.onclick = (e) => {
+      e.stopPropagation();
+      state.previewUrls = [];
+      state.fileNames = [];
+      resultEditor.value = '';
+      localStorage.removeItem('draft_ocr_result');
+      renderThumbnails();
+      emptyState.classList.remove('hidden');
+      showStatus('', '');
+    };
+
+    function showStatus(type, msg) {
+      if (!msg) { statusAlert.classList.add('hidden'); return; }
+      statusAlert.classList.remove('hidden');
+      if (type === 'error') {
+        statusAlert.className = 'mx-6 mt-4 p-3 rounded-xl text-sm font-medium flex items-center gap-2 shadow-sm bg-red-50 text-red-600 border border-red-100';
+      } else if (type === 'success') {
+        statusAlert.className = 'mx-6 mt-4 p-3 rounded-xl text-sm font-medium flex items-center gap-2 shadow-sm bg-green-50 text-green-700 border border-green-100';
+      } else {
+        statusAlert.className = 'mx-6 mt-4 p-3 rounded-xl text-sm font-medium flex items-center gap-2 shadow-sm bg-blue-50 text-blue-700 border border-blue-100';
+      }
+      statusAlert.textContent = msg;
+    }
+
+    const formatMultipleChoice = (text) => {
+      if (!text) return '';
+      let t = text;
+      t = t.replace(/(^|\s+)(?:\*\*|)(A|B|C|D)(?:\*\*|)([\.\)])(?:\*\*|)\s+/g, '\n**$2**$3 ');
+      t = t.replace(/(điểm|giác|hình|cạnh|đoạn|tại|đỉnh|qua|đường|tâm|là|tuyến|cung|góc)\n\*\*(A|B|C|D)\*\*[\.\)]\s+/gi, '$1 $2. ');
+      t = t.replace(/\n{3,}/g, '\n\n');
+      return t;
+    };
+
+    function getRenderedHtml(text, renderMode = 'web') {
+      let htmlText = formatMultipleChoice(text);
+      const escapeHtml = (str) => str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+      // Bảng Markdown
+      htmlText = htmlText.replace(/(?:^|\n)([ \t]*\|.*\|[ \t]*(?:\n[ \t]*\|.*\|[ \t]*)+)/g, (match, tableBlock) => {
+        const rows = tableBlock.trim().split('\n');
+        let htmlTable = '<table class="word-table" border="1" cellpadding="6" cellspacing="0">';
+        rows.forEach((row, rIdx) => {
+          const inner = row.trim().replace(/^\||\|$/g, '');
+          if (/^[ \-:|]+$/.test(inner)) return;
+          htmlTable += '<tr>';
+          const cells = inner.split('|');
+          const tag = rIdx === 0 ? 'th' : 'td';
+          cells.forEach(cell => {
+            htmlTable += `<${tag} style="border: 1pt solid #475569; padding: 4pt 6pt;">${cell.trim()}</${tag}>`;
+          });
+          htmlTable += '</tr>';
+        });
+        htmlTable += '</table>';
+        return htmlTable;
+      });
+
+      if (renderMode === 'word_latex') {
+        htmlText = htmlText.replace(/\$\$([\s\S]*?)\$\$/g, (m, math) => `\n\n$$${escapeHtml(math.trim())}$$\n\n`);
+        htmlText = htmlText.replace(/\$([^$]*?)\$/g, (m, math) => `$${escapeHtml(math.trim())}$`);
+      } else if (window.katex) {
+        const processMath = (match, math, isDisplay) => {
+          try {
+            const clean = math.trim();
+            if (renderMode === 'word_mathml_legacy') {
+              const html = window.katex.renderToString(clean, { displayMode: isDisplay, output: 'mathml', throwOnError: false });
+              let mMatch = html.match(/<math[^>]*>[\s\S]*?<\/math>/i);
+              if (mMatch) {
+                let cleanMath = mMatch[0].replace(/<annotation[^>]*>[\s\S]*?<\/annotation>/gi, '').replace(/<\/?semantics[^>]*>/gi, '').replace(/xmlns="[^"]*"/g, '').replace(/ display="(block|inline)"/gi, '');
+                cleanMath = cleanMath.replace(/<(\/?)([a-z]+)([^>]*)>/gi, (m, p1, p2, p3) => `<${p1}mml:${p2}${p3}>`);
+                cleanMath = cleanMath.replace(/<mml:math/i, '<mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML"');
+                return `<span style="font-family: 'Cambria Math', 'Times New Roman', serif;">${cleanMath}</span>`;
+              }
+              return match;
+            } else {
+              return window.katex.renderToString(clean, { displayMode: isDisplay, output: 'html', throwOnError: false });
+            }
+          } catch (e) { return match; }
+        };
+        htmlText = htmlText.replace(/\$\$([\s\S]*?)\$\$/g, (m, math) => processMath(m, math, true));
+        htmlText = htmlText.replace(/\$([^$]*?)\$/g, (m, math) => processMath(m, math, false));
+      }
+
+      htmlText = htmlText.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+      htmlText = htmlText.replace(/\*(.*?)\*/g, '<i>$1</i>');
+
+      htmlText = htmlText.split('\n').map(line => {
+        if (/^<\/?(table|tbody|thead|tr|th|td)/i.test(line.trim())) return line;
+        if (line.trim() === '') return '';
+        let style = "margin: 0; font-family: 'Times New Roman', serif; font-size: 14pt; line-height: 1.3;";
+        if (/^(\**|)(A|B|C|D)\1[\.\)]/.test(line.trim())) style += " margin-left: 30px;";
+        return `<p style="${style}">${line}</p>`;
+      }).filter(Boolean).join('\n');
+
+      // Ảnh minh họa
+      const imgRegex = /\[HÌNH ẢNH MINH HOẠ:\s*(IMG_[^\]]+)\]/g;
+      htmlText = htmlText.replace(imgRegex, (match, imageId) => {
+        if (state.extractedImages[imageId]) {
+          return `<div style="text-align: center; margin: 8pt 0;"><img src="${state.extractedImages[imageId]}" style="max-width: 100%; border-radius: 4px; border: 1px solid #cbd5e1; display: inline-block;" /></div>`;
+        }
+        return match;
+      });
+
+      // Gộp các bảng bị tách (Table Fragments) và loại bỏ header thừa do AI sinh ra
+      try {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlText;
+        // ── BƯỚC 1: Mở phẳng div wrapper (một lần, không vòng lặp while) ──
+        // Nếu AI bọc bảng trang 2 trong <div> chỉ chứa bảng+whitespace, kéo bảng ra ngoài
+        const isPageNoise = (el) => {
+          const tag = el.tagName ? el.tagName.toLowerCase() : '';
+          if (tag === 'br' || tag === 'hr') return true;
+          const t = el.textContent.replace(/\s+/g, ' ').trim().toLowerCase();
+          if (t === '') return true;
+          if (/^(trang|page)\s*\d+$/.test(t)) return true;
+          if (/^-{3,}$/.test(t)) return true;
+          if (/^---\s*(page\s*break|trang)\s*---$/.test(t)) return true;
+          return false;
+        };
+
+        const rootChildren1 = Array.from(tempDiv.children);
+        for (const child of rootChildren1) {
+          const ctag = child.tagName ? child.tagName.toLowerCase() : '';
+          if (!['div','section','article','main','aside'].includes(ctag)) continue;
+          // Kiểm tra không có phần tử con nào có nội dung thực ngoài table/noise
+          const hasMeaningful = Array.from(child.children).some(el => {
+            const t = el.tagName.toLowerCase();
+            if (t === 'table') return false; // bảng không phải "meaningful" cho mục đích này
+            return !isPageNoise(el); // nếu không phải noise → là nội dung thực
+          });
+          if (hasMeaningful) continue;
+          // An toàn: kéo tất cả con ra trước div này, rồi xóa div
+          const kids = Array.from(child.childNodes);
+          for (const k of kids) child.before(k);
+          child.remove();
+        }
+
+        // ── BƯỚC 2: Thu thập direct-child tables ──
+        const tables = Array.from(tempDiv.children).filter(
+          c => c.tagName && c.tagName.toLowerCase() === 'table'
+        );
+
+
+
+        // ── BƯỚC 3: Gộp bảng fragment ──
+        // Hàm lấy text giữa 2 node (iterative, không đệ quy → không stack overflow)
+        const getTextBetween = (n1, n2) => {
+          let txt = '';
+          let cur = n1.nextSibling;
+          while (cur && cur !== n2) {
+            // Dùng stack để duyệt cây không đệ quy
+            const stack = [cur];
+            while (stack.length) {
+              const nd = stack.pop();
+              if (nd.nodeType === 3) { txt += nd.textContent; continue; }
+              if (nd.nodeType !== 1) continue;
+              if (nd.tagName.toLowerCase() === 'table') continue; // bỏ qua bảng lồng
+              const chs = Array.from(nd.childNodes);
+              for (let ci = chs.length - 1; ci >= 0; ci--) stack.push(chs[ci]);
+            }
+            cur = cur.nextSibling;
+          }
+          return txt;
+        };
+
+        for (let i = 0; i < tables.length - 1; i++) {
+          const t1 = tables[i];
+          const t2 = tables[i + 1];
+
+          // Gom text giữa t1 và t2 (bỏ qua nội dung bảng lồng)
+          const between = getTextBetween(t1, t2).replace(/\s+/g, ' ').trim().toLowerCase();
+          const isFragment = (
+            between === '' ||
+            /^(trang|page)\s*\d+$/.test(between) ||
+            /^---\s*(page\s*break|trang)\s*---$/.test(between) ||
+            /^-{3,}$/.test(between)
+          );
+          if (!isFragment) continue;
+
+          const cols1 = t1.rows[0] ? t1.rows[0].cells.length : 0;
+          const cols2 = t2.rows[0] ? t2.rows[0].cells.length : 0;
+          if (cols1 === 0 || cols1 !== cols2) continue;
+
+          // Xác định startRow: bỏ qua hàng tiêu đề thuần của t2 nếu có
+          let startRow = 0;
+          if (t2.rows.length > 0) {
+            const t1RowTxt = t1.rows[0].textContent.replace(/\s+/g, ' ').trim().toLowerCase();
+            const t2RowTxt = t2.rows[0].textContent.replace(/\s+/g, ' ').trim().toLowerCase();
+            const t2Cells = Array.from(t2.rows[0].cells);
+            const pureHeader = t2Cells.length > 0 && t2Cells.every(cell => {
+              if (cell.querySelector('table')) return false;
+              const tx = cell.textContent.replace(/\s+/g, ' ').trim().toLowerCase();
+              return ['giáo viên','học sinh','cột 1','cột 2','column 1','column 2'].includes(tx);
+            });
+            if (pureHeader || t1RowTxt === t2RowTxt) startRow = 1;
+          }
+
+          // ── DEEP MERGE: gộp nội dung bảng con bên trong từng ô tương ứng ──
+          // (Không thêm outer row mới vào t1 - tránh tạo 2 outer rows khiến Word chia trang)
+          const t2OuterRows = Array.from(t2.rows);
+          const t1AllRows = Array.from(t1.rows);
+
+          for (let r = startRow; r < t2OuterRows.length; r++) {
+            const t2OuterRow = t2OuterRows[r];
+            // Luôn gộp vào outer row CUỐI của t1
+            const t1LastRow = t1AllRows[t1AllRows.length - 1];
+            const t2Cells = Array.from(t2OuterRow.cells);
+            const t1Cells = Array.from(t1LastRow.cells);
+
+            if (t1Cells.length === t2Cells.length) {
+              // Deep merge: gộp inner table của từng ô tương ứng
+              for (let ci = 0; ci < t1Cells.length; ci++) {
+                const cell1 = t1Cells[ci];
+                const cell2 = t2Cells[ci];
+                const inner1 = cell1.querySelector('table');
+                const inner2 = cell2.querySelector('table');
+
+                if (inner1 && inner2) {
+                  // Gộp các rows của inner2 vào inner1
+                  const innerBody1 = inner1.tBodies[0] || inner1;
+                  const inner2Rows = Array.from(inner2.rows);
+                  // Bỏ hàng đầu của inner2 nếu là header lặp lại
+                  let innerStart = 0;
+                  if (inner2Rows.length > 0 && inner1.rows.length > 0) {
+                    const h1 = inner1.rows[0].textContent.replace(/\s+/g,' ').trim().toLowerCase();
+                    const h2 = inner2Rows[0].textContent.replace(/\s+/g,' ').trim().toLowerCase();
+                    if (h1 === h2) innerStart = 1;
+                  }
+                  for (let ir = innerStart; ir < inner2Rows.length; ir++) {
+                    innerBody1.appendChild(inner2Rows[ir]);
+                  }
+                } else {
+                  // Không có bảng lồng: chuyển toàn bộ nodes từ cell2 sang cell1
+                  Array.from(cell2.childNodes).forEach(n => cell1.appendChild(n));
+                }
+              }
+            } else {
+              // Số cột khác nhau: fallback, thêm outer row như cũ
+              const fb = t1.tBodies[0] || t1;
+              fb.appendChild(t2OuterRow);
+            }
+          }
+
+          // Xóa các node giữa t1 và t2, rồi xóa t2
+          let nd = t1.nextSibling;
+          while (nd && nd !== t2) { const nx = nd.nextSibling; nd.remove(); nd = nx; }
+          t2.remove();
+          tables.splice(i + 1, 1);
+          i--;
+        }
+
+
+
+        // Tháo gỡ hoàn toàn thẻ <thead> để Word không tự động kích hoạt tính năng Repeat Header Rows
+        // khiến dòng "Giáo viên | Học sinh" bị lặp lại dạng bóng ma không xoá được ở trang 2
+        Array.from(tempDiv.querySelectorAll('thead')).forEach(thead => {
+          const parentTable = thead.closest('table');
+          if (parentTable) {
+            let targetBody = parentTable.tBodies.length > 0 ? parentTable.tBodies[0] : null;
+            if (!targetBody) {
+              targetBody = document.createElement('tbody');
+              parentTable.appendChild(targetBody);
+            }
+            const rows = Array.from(thead.querySelectorAll('tr'));
+            rows.reverse().forEach(tr => {
+              targetBody.insertBefore(tr, targetBody.firstChild);
+            });
+            thead.remove();
+          }
+        });
+
+        // Chuyển đổi toàn bộ thẻ <th> thành <td> trong tài liệu
+        Array.from(tempDiv.querySelectorAll('th')).forEach(th => {
+          let td = document.createElement('td');
+          td.innerHTML = th.innerHTML;
+          Array.from(th.attributes).forEach(attr => {
+            td.setAttribute(attr.name, attr.value);
+          });
+          th.replaceWith(td);
+        });
+
+        // Dọn dẹp các hàng tiêu đề "Giáo viên | Học sinh" lặp lại ở các hàng phía dưới (chỉ giữ lại hàng đầu tiên ở Trang 1)
+        const allTables = Array.from(tempDiv.querySelectorAll('table'));
+        allTables.forEach(tbl => {
+          const rows = Array.from(tbl.rows);
+          for (let r = 1; r < rows.length; r++) {
+            const tr = rows[r];
+            const cellsText = Array.from(tr.cells).map(c => c.textContent.replace(/\s+/g, ' ').trim().toLowerCase()).join('|');
+            if (cellsText === 'giáo viên|học sinh' || cellsText === 'cột 1|cột 2' || cellsText === 'column 1|column 2') {
+              tr.remove();
+            }
+          }
+        });
+        
+        htmlText = tempDiv.innerHTML;
+      } catch (e) {
+        console.error("Lỗi khi gộp bảng HTML:", e);
+      }
+
+      return htmlText;
+    }
+
+    tabEdit.onclick = () => {
+      tabEdit.className = 'px-4 py-2 rounded-lg text-sm font-bold transition-all bg-white text-blue-600 shadow-sm';
+      tabPreview.className = 'px-4 py-2 rounded-lg text-sm font-bold transition-all text-slate-500 hover:text-slate-700';
+      resultEditor.classList.remove('hidden');
+      resultPreview.classList.add('hidden');
+    };
+    tabPreview.onclick = () => {
+      tabPreview.className = 'px-4 py-2 rounded-lg text-sm font-bold transition-all bg-white text-green-600 shadow-sm';
+      tabEdit.className = 'px-4 py-2 rounded-lg text-sm font-bold transition-all text-slate-500 hover:text-slate-700';
+      resultEditor.classList.add('hidden');
+      resultPreview.classList.remove('hidden');
+      resultPreview.innerHTML = getRenderedHtml(resultEditor.value, 'web');
+    };
+
+    resultEditor.oninput = () => {
+      localStorage.setItem('draft_ocr_result', resultEditor.value);
+      if (resultEditor.value.trim()) emptyState.classList.add('hidden');
+      else emptyState.classList.remove('hidden');
+    };
+
+    // HÀM GỌI API VỚI TÍNH NĂNG XOAY VÒNG KEY
+    async function callGeminiWithRotation(base64Data, promptText, activeKeys, modelToUse) {
+      let lastError = null;
+
+      for (let k = 0; k < activeKeys.length; k++) {
+        const keyIdx = (state.currentKeyIndex + k) % activeKeys.length;
+        const currentKey = activeKeys[keyIdx];
+
+        try {
+          const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:generateContent?key=${currentKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: promptText }, { inlineData: { mimeType: "image/jpeg", data: base64Data } }] }]
+            })
+          });
+
+          const resData = await resp.json();
+          if (resp.ok && resData.candidates?.[0]?.content?.parts?.[0]?.text) {
+            state.currentKeyIndex = keyIdx;
+            return resData.candidates[0].content.parts[0].text;
+          }
+
+          const errMsg = (resData.error?.message || '').toLowerCase();
+          lastError = resData.error?.message || `Mã lỗi ${resp.status}`;
+
+          // Nếu hết Quota 429 hoặc Key không hợp lệ thì lập tức xoay sang Key tiếp theo
+          if (resp.status === 429 || errMsg.includes('quota') || resp.status === 400 || resp.status === 403) {
+            console.warn(`Key ${keyIdx + 1} gặp lỗi (${lastError}), đang tự động đổi sang Key khác...`);
+            continue;
+          }
+
+        } catch (fetchErr) {
+          lastError = fetchErr.message;
+          console.warn(`Lỗi mạng ở Key ${keyIdx + 1}: ${lastError}, thử key tiếp theo...`);
+        }
+      }
+
+      throw new Error(`Đã thử tất cả API Key nhưng không thành công: ${lastError}`);
+    }
+
+    // BẮT ĐẦU OCR
+    btnStartOCR.onclick = async () => {
+      const activeKeys = parseApiKeys(state.apiKey);
+      if (!activeKeys.length) {
+        document.getElementById('btnOpenKeyModal').click();
+        showStatus('error', 'Vui lòng nhập ít nhất 1 API Key Gemini để bắt đầu!');
+        return;
+      }
+      if (!state.previewUrls.length) return;
+
+      state.isProcessing = true;
+      state.cancelRequested = false;
+      btnStartOCR.disabled = true;
+      btnCancelOCR.classList.remove('hidden');
+      progressBarContainer.classList.remove('hidden');
+      emptyState.classList.add('hidden');
+      resultEditor.value = '';
+
+      const modelToUse = (state.modelName === 'auto') ? 'gemini-3.5-flash' : (state.modelName || 'gemini-3.5-flash');
+      let cumulativeText = '';
+
+      for (let i = 0; i < state.previewUrls.length; i++) {
+        if (state.cancelRequested) {
+          showStatus('success', `Đã dừng ở trang ${i}. Đã giữ lại toàn bộ kết quả!`);
+          break;
+        }
+
+        const url = state.previewUrls[i];
+        const base64Data = url.split(',')[1];
+
+        showStatus('info', `Đang phân tích AI trang ${i + 1}/${state.previewUrls.length} (Key ${state.currentKeyIndex + 1}/${activeKeys.length})...`);
+        progressBar.style.width = `${Math.round(((i) / state.previewUrls.length) * 100)}%`;
+
+        let modeInstruction = "Hãy chuyển đổi toàn bộ nội dung trong hình ảnh này thành văn bản có cấu trúc chuẩn Markdown.";
+        if (state.processingMode === 'clean') {
+          modeInstruction = "LÀM SẠCH ĐỀ THI: Hãy chuyển đổi văn bản. Bỏ qua các vết khoanh tròn đáp án, nét viết tay. Chỉ trích xuất đề in gốc.";
+        } else if (state.processingMode === 'answer_key') {
+          modeInstruction = "TRÍCH XUẤT BẢNG ĐÁP ÁN: Chỉ tìm và trích xuất Bảng đáp án trắc nghiệm.";
+        }
+
+        const promptText = `${modeInstruction} YÊU CẦU NGHIÊM NGẶT:
+1. Bảng biểu: Dùng bảng Markdown chuẩn. KHÔNG dùng mã LaTeX. ĐẶC BIỆT CHÚ Ý: NẾU có bảng lồng trong bảng (nested tables) hoặc bố cục chia cột phức tạp, BẮT BUỘC dùng mã HTML (<table class="word-table" border="1">, <tr>, <td>) cho toàn bộ cấu trúc bảng đó thay vì Markdown.
+2. CÔNG THỨC TOÁN: Bọc TẤT CẢ công thức và biến số trong dấu $ (ví dụ $2x+3=9$, $x$, $\frac{3}{4}$). Mọi chữ tiếng Việt nằm ngoài dấu $. Dấu nhân dùng dấu chấm (.).
+3. Các phương án A, B, C, D BẮT BUỘC mỗi đáp án xuống một dòng riêng biệt.
+4. Hình ảnh minh họa/Sơ đồ: Xuất thẻ [IMG_BBOX: ymin, xmin, ymax, xmax] thang 1000.
+5. Điền khuyết: Giữ nguyên đường chấm chấm '(1) ........'.`;
+
+        try {
+          let text = await callGeminiWithRotation(base64Data, promptText, activeKeys, modelToUse);
+          text = text.replace(/```(?:latex|tex|math|markdown)?\n?/g, '').replace(/```/g, '');
+          text = text.replace(/\$\$\$/g, '$$').replace(/\cdot/g, '.');
+          text = formatMultipleChoice(text);
+
+          // Cắt ảnh minh họa
+          const regex = /\[IMG_BBOX:\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+)\]/g;
+          let match;
+          const img = new Image();
+          img.src = url;
+          await new Promise(r => img.onload = r);
+
+          let imgCount = 0;
+          while ((match = regex.exec(text)) !== null) {
+            let ymin = parseInt(match[1]), xmin = parseInt(match[2]), ymax = parseInt(match[3]), xmax = parseInt(match[4]);
+            const sX = (xmin / 1000) * img.width; const sY = (ymin / 1000) * img.height;
+            const sW = ((xmax - xmin) / 1000) * img.width; const sH = ((ymax - ymin) / 1000) * img.height;
+            if (sW > 5 && sH > 5) {
+              const tCanvas = document.createElement('canvas');
+              tCanvas.width = sW; tCanvas.height = sH;
+              tCanvas.getContext('2d').drawImage(img, sX, sY, sW, sH, 0, 0, sW, sH);
+              const imageId = `IMG_P${i}_${imgCount}`;
+              state.extractedImages[imageId] = tCanvas.toDataURL('image/png');
+              text = text.replace(match[0], `[HÌNH ẢNH MINH HOẠ: ${imageId}]`);
+              imgCount++;
+            }
+          }
+
+          cumulativeText += (cumulativeText ? '\n\n' : '') + text;
+          resultEditor.value = cumulativeText;
+          localStorage.setItem('draft_ocr_result', cumulativeText);
+
+        } catch (err) {
+          console.error(err);
+          showStatus('error', `Lỗi trang ${i + 1}: ${err.message}`);
+        }
+      }
+
+      progressBar.style.width = '100%';
+      state.isProcessing = false;
+      btnStartOCR.disabled = false;
+      btnCancelOCR.classList.add('hidden');
+      if (!state.cancelRequested) showStatus('success', 'Chuyển đổi hoàn tất 100%!');
+    };
+
+    btnCancelOCR.onclick = () => {
+      state.cancelRequested = true;
+      showStatus('info', 'Đang dừng tiến trình...');
+    };
+
+    // Xuất Word
+    const escapeUnicodeForWord = (str) => str.replace(/[^\x00-\x7F]/g, char => '&#' + char.charCodeAt(0) + ';');
+
+    document.getElementById('btnCopy').onclick = () => {
+      navigator.clipboard.writeText(resultEditor.value);
+      alert('Đã sao chép nội dung!');
+    };
+
+    document.getElementById('btnWordLegacy').onclick = () => {
+      if (!resultEditor.value) return;
+      const htmlText = getRenderedHtml(resultEditor.value, 'word_mathml_legacy');
+      const header = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns:m='http://schemas-microsoft.com/office/2004/12/omml' xmlns:mml='http://www.w3.org/1998/Math/MathML'>
+      <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Word Equation</title>
+      <style>
+        @page WordSection1 { size: 595.3pt 841.9pt; margin: 56.7pt; }
+        div.WordSection1 { page: WordSection1; }
+        body { font-family: 'Times New Roman', serif; font-size: 13pt; line-height: 1.15; }
+        table.word-table { border-collapse: collapse; width: 100%; border: 1pt solid windowtext; margin: 4pt 0; page-break-inside: auto !important; }
+        table.word-table tr { page-break-inside: auto !important; page-break-after: auto !important; }
+        table.word-table td, table.word-table th { border: 1pt solid windowtext; padding: 4pt; vertical-align: top; page-break-inside: auto !important; }
+        table.word-table p { margin: 2pt 0; }
+      </style>
+      </head><body lang="vi-VN"><div class="WordSection1">`;
+      const footer = `</div></body></html>`;
+
+      const blob = new Blob([escapeUnicodeForWord(header + htmlText + footer)], { type: 'application/msword' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'TaiLieu_Equation_MoiMay.doc';
+      a.click();
+    };
+
+    document.getElementById('btnWordLatex').onclick = () => {
+      if (!resultEditor.value) return;
+      const htmlText = getRenderedHtml(resultEditor.value, 'word_latex');
+      const header = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'>
+      <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Word MathType</title>
+      <style>
+        @page WordSection1 { size: 595.3pt 841.9pt; margin: 56.7pt; }
+        div.WordSection1 { page: WordSection1; }
+        body { font-family: 'Times New Roman', serif; font-size: 14pt; line-height: 1.15; }
+        table.word-table { border-collapse: collapse; width: 100%; border: 1pt solid windowtext; margin: 4pt 0; page-break-inside: auto !important; }
+        table.word-table tr { page-break-inside: auto !important; page-break-after: auto !important; }
+        table.word-table td, table.word-table th { border: 1pt solid windowtext; padding: 4pt; vertical-align: top; page-break-inside: auto !important; }
+        table.word-table p { margin: 2pt 0; }
+      </style>
+      </head><body lang="vi-VN"><div class="WordSection1">`;
+      const footer = `</div></body></html>`;
+
+      const blob = new Blob([escapeUnicodeForWord(header + htmlText + footer)], { type: 'application/msword' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'TaiLieu_MathType_LaTeX.doc';
+      a.click();
+    };
+
+    document.getElementById('btnWordImg').onclick = async () => {
+      if (!resultEditor.value) return;
+      showStatus('info', 'Đang tạo ảnh KaTeX cho Word...');
+      const htmlText = getRenderedHtml(resultEditor.value, 'web');
+      const header = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'>
+      <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Word Images</title>
+      <style>
+        @page WordSection1 { size: 595.3pt 841.9pt; margin: 56.7pt; }
+        div.WordSection1 { page: WordSection1; }
+        body { font-family: 'Times New Roman', serif; font-size: 14pt; line-height: 1.15; }
+        table.word-table { border-collapse: collapse; width: 100%; border: 1pt solid windowtext; margin: 4pt 0; page-break-inside: auto !important; }
+        table.word-table tr { page-break-inside: auto !important; page-break-after: auto !important; }
+        table.word-table td, table.word-table th { border: 1pt solid windowtext; padding: 4pt; vertical-align: top; page-break-inside: auto !important; }
+        table.word-table p { margin: 2pt 0; }
+      </style>
+      </head><body lang="vi-VN"><div class="WordSection1">`;
+      const footer = `</div></body></html>`;
+
+      const blob = new Blob([escapeUnicodeForWord(header + htmlText + footer)], { type: 'application/msword' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'TaiLieu_AnhToan_MoiMay.doc';
+      a.click();
+      showStatus('success', 'Đã xuất file Word thành công!');
+    };
+
+    // ==========================================
+    // BẢN QUYỀN & DÙNG THỬ (ĐỒNG BỘ PYTHON DESKTOP)
+    // ==========================================
+    
+    function checkLicense() {
+      // Đọc từ file js sinh ra bởi Python
+      const state = window.APP_ACTIVATION || { isActivated: false, machineId: 'UNKNOWN', trialDaysLeft: 0, expired: false };
+      
+      if (state.isActivated && !state.expired) {
+        if (state.licenseType === 'lifetime') {
+          return { status: 'pro', text: 'Vĩnh Viễn' };
+        } else {
+          return { status: 'pro', text: state.licenseType === '1y' ? '1 Năm' : '2 Năm' };
+        }
+      }
+      
+      if (state.trialDaysLeft > 0) {
+        return { status: 'trial', daysLeft: state.trialDaysLeft };
+      }
+      
+      return { status: 'expired' };
+    }
+
+    function updateLicenseUI() {
+      const lic = checkLicense();
+      const planBtn = document.getElementById('btnOpenPlanModal');
+      if (!planBtn) return;
+      
+      if (lic.status === 'pro') {
+        planBtn.innerHTML = '<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg><span id="currentPlanText">Gói Pro (' + lic.text + ')</span>';
+        planBtn.className = 'inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-sm text-sm font-bold text-white hover:opacity-90 transition-all';
+      } else if (lic.status === 'trial') {
+        planBtn.innerHTML = '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span id="currentPlanText">Dùng thử (' + lic.daysLeft + ' ngày)</span>';
+        planBtn.className = 'inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl shadow-sm text-sm font-bold text-white hover:opacity-90 transition-all';
+      } else {
+        planBtn.innerHTML = '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg><span id="currentPlanText">Hết Hạn</span>';
+        planBtn.className = 'inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-500 to-rose-600 rounded-2xl shadow-sm text-sm font-bold text-white hover:opacity-90 transition-all';
+        setTimeout(() => {
+          document.getElementById('planModal').classList.add('hidden');
+          document.getElementById('activationModal').classList.remove('hidden');
+          const btnClose = document.getElementById('btnCloseActivationModal');
+          if(btnClose) btnClose.style.display = 'none';
+        }, 500);
+      }
+    }
+
+    // Init UI
+    const appActivationState = window.APP_ACTIVATION || { machineId: 'UNKNOWN' };
+    const idEl = document.getElementById('displayMachineId');
+    if (idEl) idEl.value = appActivationState.machineId;
+    updateLicenseUI();
+
+    window.copyMachineId = function() {
+      const input = document.getElementById('displayMachineId');
+      input.select();
+      document.execCommand('copy');
+      alert('Đã copy Mã Máy!');
+    };
+
+    function ensureActivated() {
+      const lic = checkLicense();
+      if (lic.status === 'expired') {
+        alert("Đã hết thời gian dùng thử. Vui lòng mở phần mềm trên máy tính để kích hoạt.");
+        document.getElementById('activationModal').classList.remove('hidden');
+        const btnClose = document.getElementById('btnCloseActivationModal');
+        if(btnClose) btnClose.style.display = 'none';
+        return false;
+      }
+      return true;
+    }
+
+    function selectPlan(plan) {
+      const planModal = document.getElementById('planModal');
+      if (plan === 'pro') {
+        planModal.classList.add('hidden');
+        document.getElementById('activationModal').classList.remove('hidden');
+      } else {
+        planModal.classList.add('hidden');
+      }
+    }
+    
+    // Plan Modal Event Listeners
+    document.getElementById('btnOpenPlanModal')?.addEventListener('click', () => {
+      document.getElementById('planModal').classList.remove('hidden');
+    });
+    document.getElementById('btnClosePlanModal')?.addEventListener('click', () => {
+      document.getElementById('planModal').classList.add('hidden');
+    });
+    
+    // Activation Modal Logic
+    document.getElementById('btnCloseActivationModal')?.addEventListener('click', () => {
+      const lic = checkLicense();
+      if (lic.status === 'expired') {
+        alert("Bạn phải kích hoạt để tiếp tục sử dụng!");
+      } else {
+        document.getElementById('activationModal').classList.add('hidden');
+      }
+    });
+
+    document.getElementById('btnSubmitActivation')?.addEventListener('click', () => {
+      alert("❌ Vui lòng mở phần mềm Desktop trên máy tính và nhập mã kích hoạt vào đó. Website sẽ tự động nhận mã sau khi bạn kích hoạt xong trên phần mềm!");
+    });
+
+  </script>
+</body>
+</html>
