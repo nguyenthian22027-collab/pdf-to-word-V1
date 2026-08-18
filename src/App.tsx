@@ -485,7 +485,7 @@ export default function App() {
               <ScanText size={27} />
             </span>
             <span>
-              <strong>AIOMT OCR</strong>
+              <strong>MathOCR Studio</strong>
               <small>PDF/Image → Word Equation &amp; MathType</small>
             </span>
           </div>
@@ -513,18 +513,13 @@ export default function App() {
       {/* Main Page */}
       <main className="page-container">
         <section className="hero-card">
-          <div>
+          <div className="hero-content">
             <span className="eyebrow"><WandSparkles size={16} /> OCR tài liệu Toán và bảng biểu</span>
             <h1>Chuyển PDF hoặc ảnh thành Word, giữ công thức và hình minh họa</h1>
             <p>
               Tải PDF/ảnh hoặc nhấn Ctrl+V để dán ảnh. Gemini 3.7 / 3.6 / 3.5 nhận nguyên file PDF trong một yêu cầu,
               tự động xoay vòng nhiều API Key khi gặp giới hạn hạn ngạch Quota.
             </p>
-          </div>
-          <div className="hero-flow">
-            <span><FileUp size={18} /> Tải file</span><b>→</b>
-            <span><Cpu size={18} /> OCR AI</span><b>→</b>
-            <span><Download size={18} /> Xuất Word</span>
           </div>
         </section>
 

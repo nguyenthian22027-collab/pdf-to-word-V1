@@ -1,9 +1,9 @@
 @echo off
-title AIOMT OCR PDF/Image - Start App
+title MathOCR Studio - Start App
 cd /d "%~dp0"
 
 echo ================================================================
-echo         AIOMT OCR PDF/IMAGE - KHOI DONG UNG DUNG
+echo         MATHOCR STUDIO - KHOI DONG UNG DUNG
 echo ================================================================
 echo.
 

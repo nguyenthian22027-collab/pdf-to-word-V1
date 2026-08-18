@@ -1,4 +1,4 @@
-# AIOMT OCR PDF/Image — Web v1.3 + PyMuPDF Crop v2.1
+# MathOCR Studio — Web v1.3 + PyMuPDF Crop v2.1
 
 Ứng dụng React + TypeScript + Vite giao diện teal, OCR PDF/ảnh và xuất Word Equation hoặc MathType OLE.
 
