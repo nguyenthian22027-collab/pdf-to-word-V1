@@ -38,6 +38,7 @@ interface Props {
   mathModel: MathSolverModel;
   onMessage: (message: string, isError?: boolean) => void;
   onOpenApiSettings: () => void;
+  onRequireDownloadQuota?: (formatName: string) => Promise<boolean>;
 }
 
 type ViewMode = 'split' | 'editor' | 'preview';
@@ -73,6 +74,7 @@ export function LatexDirectConverter({
   mathModel,
   onMessage,
   onOpenApiSettings,
+  onRequireDownloadQuota,
 }: Props) {
   const [content, setContent] = useState('');
   const [baseName, setBaseName] = useState('tai_lieu_chuyen_doi');
@@ -278,6 +280,10 @@ export function LatexDirectConverter({
   // Xuất Word Equation
   async function handleExportEquation() {
     if (!normalizedContent.trim()) return;
+    if (onRequireDownloadQuota) {
+      const allowed = await onRequireDownloadQuota('Word Equation (.docx)');
+      if (!allowed) return;
+    }
     setIsExporting('equation');
     const name = `${safeBaseName(baseName)}_equation.docx`;
     try {
@@ -295,6 +301,10 @@ export function LatexDirectConverter({
   // Xuất Word MathType
   async function handleExportMathType() {
     if (!normalizedContent.trim()) return;
+    if (onRequireDownloadQuota) {
+      const allowed = await onRequireDownloadQuota('Word MathType (.docx)');
+      if (!allowed) return;
+    }
     setIsExporting('mathtype');
     const name = `${safeBaseName(baseName)}_mathtype.docx`;
     try {
@@ -317,6 +327,10 @@ export function LatexDirectConverter({
   // Xuất Word MathType (.doc) siêu tương thích offline giống Chuyen_Doi_PDF_Toan_Hoc.html
   async function handleExportHtmlMathTypeDoc() {
     if (!normalizedContent.trim()) return;
+    if (onRequireDownloadQuota) {
+      const allowed = await onRequireDownloadQuota('Word MathType (.doc)');
+      if (!allowed) return;
+    }
     const name = `${safeBaseName(baseName)}_MathType_LaTeX.doc`;
     try {
       const { exportHtmlMathTypeDoc } = await import('../services/docxExportService');
@@ -326,6 +340,17 @@ export function LatexDirectConverter({
       const err = error instanceof Error ? error.message : String(error);
       onMessage(`Không xuất được Word .doc: ${err}`, true);
     }
+  }
+
+  // Tải file Markdown (.md)
+  async function handleDownloadMd() {
+    if (!normalizedContent.trim()) return;
+    if (onRequireDownloadQuota) {
+      const allowed = await onRequireDownloadQuota('Markdown LaTeX (.md)');
+      if (!allowed) return;
+    }
+    downloadText(normalizedContent, `${safeBaseName(baseName)}.md`);
+    onMessage(`Đã tải xuống file .md thành công.`);
   }
 
   // Sao chép kết quả
@@ -584,7 +609,7 @@ export function LatexDirectConverter({
             <button
               type="button"
               className="button button-light"
-              onClick={() => downloadText(normalizedContent, `${safeBaseName(baseName)}.md`)}
+              onClick={() => void handleDownloadMd()}
               disabled={!normalizedContent.trim()}
               title="Tải tệp .md"
             >

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tạo Mã Kích Hoạt - Ứng Dụng pdf-to-word-mathtype</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4">
+  <div class="max-w-xl w-full bg-slate-800/90 backdrop-blur-xl border border-slate-700/80 rounded-3xl p-6 sm:p-8 shadow-2xl">
+    <!-- Header -->
+    <div class="text-center mb-6">
+      <div class="inline-flex p-3 bg-gradient-to-tr from-indigo-600 to-purple-600 rounded-2xl mb-3 shadow-lg shadow-indigo-500/20 text-white">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+      </div>
+      <h1 class="text-2xl font-black tracking-tight text-white">CÔNG CỤ TẠO MÃ KÍCH HOẠT</h1>
+      <p class="text-sm font-semibold text-indigo-400 mt-1">
+        ỨNG DỤNG: <span class="text-emerald-400 font-mono font-bold">pdf-to-word-mathtype</span>
+      </p>
+      <p class="text-xs text-slate-400 mt-0.5">Dành riêng cho Admin Quản Lý Bản Quyền (Zalo: 0988.250.112)</p>
+    </div>
+
+    <!-- Generator Form -->
+    <div class="space-y-4">
+      <!-- Input HWID -->
+      <div>
+        <label class="block text-xs font-bold text-slate-300 mb-1.5 flex items-center justify-between">
+          <span>1. Nhập Mã Máy (Hardware ID) của khách hàng:</span>
+          <span class="text-indigo-400 text-[11px] font-normal">VD: MTH-8A2F-9C1D-4E7B</span>
+        </label>
+        <input
+          type="text"
+          id="inputHwid"
+          placeholder="MTH-XXXX-XXXX-XXXX"
+          class="w-full px-4 py-3 bg-slate-900/80 border border-slate-700 rounded-xl text-sm font-mono font-bold text-center text-indigo-300 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent uppercase transition-all"
+        />
+      </div>
+
+      <!-- Select Package -->
+      <div>
+        <label class="block text-xs font-bold text-slate-300 mb-1.5">
+          2. Chọn gói bản quyền kích hoạt:
+        </label>
+        <div class="grid grid-cols-2 gap-2.5">
+          <label class="relative flex flex-col p-3 bg-slate-900/60 border border-slate-700 rounded-xl cursor-pointer hover:border-indigo-500 transition-all has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-950/40">
+            <input type="radio" name="licenseType" value="1YEAR" class="sr-only" checked />
+            <span class="text-xs font-bold text-white flex items-center gap-1.5">👑 Gói Pro 1 Năm</span>
+            <span class="text-[11px] text-slate-400 mt-0.5">Thời hạn 365 ngày</span>
+          </label>
+
+          <label class="relative flex flex-col p-3 bg-slate-900/60 border border-slate-700 rounded-xl cursor-pointer hover:border-purple-500 transition-all has-[:checked]:border-purple-500 has-[:checked]:bg-purple-950/40">
+            <input type="radio" name="licenseType" value="LIFETIME" class="sr-only" />
+            <span class="text-xs font-bold text-purple-300 flex items-center gap-1.5">💎 Gói Vĩnh Viễn</span>
+            <span class="text-[11px] text-slate-400 mt-0.5">Mở khóa trọn đời</span>
+          </label>
+
+          <label class="relative flex flex-col p-3 bg-slate-900/60 border border-slate-700 rounded-xl cursor-pointer hover:border-amber-500 transition-all has-[:checked]:border-amber-500 has-[:checked]:bg-amber-950/40">
+            <input type="radio" name="licenseType" value="EXTEND_5" class="sr-only" />
+            <span class="text-xs font-bold text-amber-300 flex items-center gap-1.5">🎁 Gia Hạn +5 Lượt</span>
+            <span class="text-[11px] text-slate-400 mt-0.5">Cộng 5 lượt dùng thử</span>
+          </label>
+
+          <label class="relative flex flex-col p-3 bg-slate-900/60 border border-slate-700 rounded-xl cursor-pointer hover:border-amber-500 transition-all has-[:checked]:border-amber-500 has-[:checked]:bg-amber-950/40">
+            <input type="radio" name="licenseType" value="EXTEND_10" class="sr-only" />
+            <span class="text-xs font-bold text-amber-300 flex items-center gap-1.5">🎁 Gia Hạn +10 Lượt</span>
+            <span class="text-[11px] text-slate-400 mt-0.5">Cộng 10 lượt dùng thử</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Generate Button -->
+      <button
+        id="btnGenerate"
+        class="w-full py-3.5 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/25 transition-all flex items-center justify-center gap-2 mt-2 cursor-pointer active:scale-[0.99]"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        TẠO MÃ KÍCH HOẠT
+      </button>
+
+      <!-- Output Result Box -->
+      <div id="resultBox" class="hidden mt-6 p-4 bg-slate-900/90 border border-emerald-500/40 rounded-2xl space-y-3 animate-fade-in">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            Mã Kích Hoạt (Ứng dụng: pdf-to-word-mathtype):
+          </span>
+          <span id="planLabelBadge" class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold">1 Năm</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input
+            type="text"
+            id="outputKey"
+            readonly
+            class="w-full px-3 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm font-mono font-black text-center text-emerald-300 select-all"
+          />
+          <button
+            id="btnCopyKey"
+            class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer"
+          >
+            📋 Sao Chép
+          </button>
+        </div>
+
+        <!-- Pre-composed Zalo Message Box -->
+        <div class="pt-2 border-t border-slate-800">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-[11px] font-semibold text-slate-400">Tin nhắn soạn sẵn gửi Zalo cho khách:</span>
+            <button id="btnCopyMessage" class="text-[11px] text-indigo-400 hover:text-indigo-300 font-bold">Sao chép tin nhắn</button>
+          </div>
+          <textarea
+            id="outputMessage"
+            rows="3"
+            readonly
+            class="w-full p-2.5 bg-slate-950/60 border border-slate-800 rounded-xl text-xs font-sans text-slate-300 select-all focus:outline-none"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const MASTER_SECRET_SALT = 'MathOCR_Studio_Secure_2026_@Keygen#Secret$X9!';
+
+    function simpleHash(input) {
+      let hash = 0;
+      for (let i = 0; i < input.length; i++) {
+        const char = input.charCodeAt(i);
+        hash = (hash << 5) - hash + char;
+        hash |= 0;
+      }
+      let h2 = 5381;
+      for (let i = input.length - 1; i >= 0; i--) {
+        h2 = (h2 * 33) ^ input.charCodeAt(i);
+        h2 |= 0;
+      }
+      const hex1 = Math.abs(hash).toString(16).padStart(8, '0').toUpperCase();
+      const hex2 = Math.abs(h2).toString(16).padStart(8, '0').toUpperCase();
+      return hex1 + hex2;
+    }
+
+    function generateLicenseKey(machineId, type, extraVal = 5) {
+      const normHwid = (machineId || '').trim().toUpperCase();
+      let prefix = 'LIFE';
+      let payloadParam = 'INF';
+
+      if (type === '1YEAR') {
+        prefix = 'PRO1Y';
+        payloadParam = `${extraVal || 365}D`;
+      } else if (type === 'EXTEND') {
+        const trials = extraVal || 5;
+        prefix = `EXT${trials.toString().padStart(2, '0')}`;
+        payloadParam = `${trials}T`;
+      }
+
+      const signInput = `${normHwid}#${prefix}#${payloadParam}#${MASTER_SECRET_SALT}`;
+      const signHash = simpleHash(signInput);
+
+      const part1 = normHwid.replace(/[^A-Z0-9]/g, '').substring(3, 7) || 'AAAA';
+      const part2 = normHwid.replace(/[^A-Z0-9]/g, '').substring(7, 11) || 'BBBB';
+      const part3 = signHash.substring(0, 4);
+      const part4 = signHash.substring(4, 8);
+
+      return `${prefix}-${part1}-${part2}-${part3}-${part4}`;
+    }
+
+    const inputHwid = document.getElementById('inputHwid');
+    const btnGenerate = document.getElementById('btnGenerate');
+    const resultBox = document.getElementById('resultBox');
+    const outputKey = document.getElementById('outputKey');
+    const outputMessage = document.getElementById('outputMessage');
+    const planLabelBadge = document.getElementById('planLabelBadge');
+    const btnCopyKey = document.getElementById('btnCopyKey');
+    const btnCopyMessage = document.getElementById('btnCopyMessage');
+
+    btnGenerate.addEventListener('click', () => {
+      const hwid = inputHwid.value.trim().toUpperCase();
+      if (!hwid || hwid.length < 5) {
+        alert('Vui lòng nhập Mã Máy (Hardware ID) hợp lệ!');
+        inputHwid.focus();
+        return;
+      }
+
+      const selectedOption = document.querySelector('input[name="licenseType"]:checked').value;
+      let type = '1YEAR';
+      let val = 365;
+      let labelText = 'Bản Pro 1 Năm';
+
+      if (selectedOption === 'LIFETIME') {
+        type = 'LIFETIME';
+        val = 0;
+        labelText = 'Bản Pro Vĩnh Viễn';
+      } else if (selectedOption === 'EXTEND_5') {
+        type = 'EXTEND';
+        val = 5;
+        labelText = 'Gia Hạn +5 Lượt';
+      } else if (selectedOption === 'EXTEND_10') {
+        type = 'EXTEND';
+        val = 10;
+        labelText = 'Gia Hạn +10 Lượt';
+      }
+
+      const key = generateLicenseKey(hwid, type, val);
+
+      outputKey.value = key;
+      planLabelBadge.textContent = labelText;
+
+      outputMessage.value = `Dưới đây là mã kích hoạt bản quyền ứng dụng pdf-to-word-mathtype của bạn:\n- Mã kích hoạt: ${key}\n- Loại gói: ${labelText}\nBạn bấm vào nút [Bản Quyền/Dùng Thử] trên web rồi dán mã vào để mở khóa ngay nhé!`;
+
+      resultBox.classList.remove('hidden');
+    });
+
+    btnCopyKey.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(outputKey.value);
+      btnCopyKey.textContent = '✓ Đã Copy';
+      setTimeout(() => btnCopyKey.textContent = '📋 Sao Chép', 2000);
+    });
+
+    btnCopyMessage.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(outputMessage.value);
+      btnCopyMessage.textContent = '✓ Đã copy tin nhắn';
+      setTimeout(() => btnCopyMessage.textContent = 'Sao chép tin nhắn', 2000);
+    });
+  </script>
+</body>
+</html>

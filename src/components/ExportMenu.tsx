@@ -9,6 +9,7 @@ interface Props {
   baseName: string;
   disabled?: boolean;
   onMessage: (message: string, isError?: boolean) => void;
+  onRequireDownloadQuota?: (formatName: string) => Promise<boolean>;
 }
 
 const options = [
@@ -32,7 +33,13 @@ const options = [
   },
 ];
 
-export function ExportMenu({ content, baseName, disabled, onMessage }: Props) {
+export function ExportMenu({
+  content,
+  baseName,
+  disabled,
+  onMessage,
+  onRequireDownloadQuota,
+}: Props) {
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState<WordMode | ''>('');
   const rootRef = useRef<HTMLDivElement>(null);
@@ -47,6 +54,22 @@ export function ExportMenu({ content, baseName, disabled, onMessage }: Props) {
 
   async function run(mode: WordMode) {
     if (!content.trim() || busy || disabled) return;
+
+    const formatName =
+      mode === 'equation'
+        ? 'Word Equation (.docx)'
+        : mode === 'mathtype'
+        ? 'Word MathType (.docx)'
+        : 'Word MathType (.doc)';
+
+    if (onRequireDownloadQuota) {
+      const allowed = await onRequireDownloadQuota(formatName);
+      if (!allowed) {
+        setOpen(false);
+        return;
+      }
+    }
+
     setBusy(mode);
     setOpen(false);
     const name = safeBaseName(baseName);

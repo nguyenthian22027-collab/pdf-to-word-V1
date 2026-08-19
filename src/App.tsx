@@ -2,16 +2,20 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import {
   AlertCircle,
+  AlertTriangle,
+  Award,
   Braces,
   CheckCircle2,
   Clipboard,
   Copy,
   Cpu,
+  Crown,
   Download,
   FileEdit,
   FileImage,
   FileText,
   FileUp,
+  Gift,
   Images,
   Info,
   KeyRound,
@@ -33,6 +37,7 @@ import {
 import { ApiSettingsModal } from './components/ApiSettingsModal';
 import { ExportMenu } from './components/ExportMenu';
 import { LatexDirectConverter } from './components/LatexDirectConverter';
+import { LicenseModal } from './components/LicenseModal';
 import { MarkdownPreview } from './components/MarkdownPreview';
 import {
   hasDocumentImageMarkers,
@@ -42,6 +47,8 @@ import {
   replaceUnresolvedImageMarkers,
 } from './services/aiService';
 import { parseApiKeys } from './services/apiHealthService';
+import { consumeDownloadQuota, getLicenseStatus } from './services/licenseClient';
+import type { LicenseStatus } from './services/licenseEngine';
 import {
   countEmbeddedImages,
   countMathExpressions,
@@ -153,6 +160,52 @@ export default function App() {
   const [workspaceTab, setWorkspaceTab] = useState<WorkspaceTab>('result');
   const [resultView, setResultView] = useState<ResultView>('split');
   const [settingsCollapsed, setSettingsCollapsed] = useState(false);
+
+  // License & Trial state
+  const [licenseStatus, setLicenseStatus] = useState<LicenseStatus | null>(null);
+  const [isLicenseModalOpen, setIsLicenseModalOpen] = useState(false);
+
+  // Nạp trạng thái bản quyền từ Local Node Vault khi khởi động
+  useEffect(() => {
+    getLicenseStatus()
+      .then((st) => setLicenseStatus(st))
+      .catch((err) => console.error('Không tải được license status:', err));
+  }, []);
+
+  // Hàm kiểm tra và trừ 1 lượt tải file (áp dụng cho mọi định dạng)
+  const handleRequireDownloadQuota = useCallback(
+    async (formatName: string): Promise<boolean> => {
+      try {
+        const res = await consumeDownloadQuota(formatName);
+        if (res.allowed) {
+          const latest = await getLicenseStatus();
+          setLicenseStatus(latest);
+          if (!latest.isActivated && typeof res.remaining === 'number') {
+            setNotice({
+              kind: 'info',
+              text: `Đã dùng 1 lượt tải (${formatName}). Bạn còn ${res.remaining}/${latest.trialMax} lượt dùng thử.`,
+            });
+          }
+          return true;
+        } else {
+          const latest = await getLicenseStatus();
+          setLicenseStatus(latest);
+          setIsLicenseModalOpen(true);
+          setNotice({
+            kind: 'error',
+            text:
+              res.message ||
+              'Bạn đã hết 5 lượt dùng thử. Vui lòng kích hoạt bản quyền để tiếp tục tải file.',
+          });
+          return false;
+        }
+      } catch (error) {
+        console.error('Lỗi khi kiểm tra bản quyền tải file:', error);
+        return true;
+      }
+    },
+    [],
+  );
 
   const apiKeys = useMemo(() => parseApiKeys(rawApiKeyText), [rawApiKeyText]);
 
@@ -491,6 +544,46 @@ export default function App() {
           </div>
 
           <div className="topbar-badges">
+            {/* Nút trạng thái Bản Quyền & Dùng Thử */}
+            <button
+              type="button"
+              className={`license-header-badge ${
+                licenseStatus?.isActivated
+                  ? licenseStatus.licenseType === 'lifetime'
+                    ? 'is-pro-lifetime'
+                    : 'is-pro-1year'
+                  : (licenseStatus?.trialRemaining ?? 0) <= 0
+                  ? 'is-expired'
+                  : 'is-trial'
+              }`}
+              onClick={() => setIsLicenseModalOpen(true)}
+              title="Quản lý bản quyền & Xem số lượt dùng thử"
+            >
+              {licenseStatus?.isActivated ? (
+                licenseStatus.licenseType === 'lifetime' ? (
+                  <>
+                    <Crown size={15} className="text-purple-600" />
+                    <span>Pro Vĩnh Viễn</span>
+                  </>
+                ) : (
+                  <>
+                    <Award size={15} className="text-blue-600" />
+                    <span>Pro 1 Năm</span>
+                  </>
+                )
+              ) : (licenseStatus?.trialRemaining ?? 0) <= 0 ? (
+                <>
+                  <AlertTriangle size={15} className="text-red-600" />
+                  <span>Hết Lượt Tải (0/{licenseStatus?.trialMax || 5})</span>
+                </>
+              ) : (
+                <>
+                  <Gift size={15} className="text-amber-600" />
+                  <span>Dùng Thử ({licenseStatus?.trialRemaining ?? 5}/{licenseStatus?.trialMax || 5})</span>
+                </>
+              )}
+            </button>
+
             <button
               type="button"
               className="api-settings-trigger-btn"
@@ -855,9 +948,13 @@ export default function App() {
                   <button
                     type="button"
                     className="button button-light"
-                    onClick={() =>
-                      downloadText(normalizedContent, `${safeBaseName(baseName)}.md`)
-                    }
+                    onClick={async () => {
+                      const allowed = await handleRequireDownloadQuota('Markdown (.md)');
+                      if (allowed) {
+                        downloadText(normalizedContent, `${safeBaseName(baseName)}.md`);
+                        setNotice({ kind: 'success', text: 'Đã tải xuống file Markdown.' });
+                      }
+                    }}
                     disabled={!normalizedContent}
                   >
                     <Download size={16} /> Markdown
@@ -869,6 +966,7 @@ export default function App() {
                     onMessage={(message, isError) =>
                       setNotice({ kind: isError ? 'error' : 'success', text: message })
                     }
+                    onRequireDownloadQuota={handleRequireDownloadQuota}
                   />
                 </div>
               </div>
@@ -986,6 +1084,7 @@ export default function App() {
               setNotice({ kind: isError ? 'error' : 'success', text: message })
             }
             onOpenApiSettings={() => setIsApiModalOpen(true)}
+            onRequireDownloadQuota={handleRequireDownloadQuota}
           />
         )}
 
@@ -1004,6 +1103,17 @@ export default function App() {
         onSave={handleSaveApiSettings}
         currentGeminiModel={geminiModel}
         currentMathModel={mathModel}
+      />
+
+      {/* License & Activation Modal Dialog */}
+      <LicenseModal
+        isOpen={isLicenseModalOpen}
+        onClose={() => setIsLicenseModalOpen(false)}
+        status={licenseStatus}
+        onStatusUpdated={(newStatus) => setLicenseStatus(newStatus)}
+        onMessage={(msg, isErr) =>
+          setNotice({ kind: isErr ? 'error' : 'success', text: msg })
+        }
       />
     </div>
   );
