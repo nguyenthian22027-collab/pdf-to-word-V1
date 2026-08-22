@@ -4,6 +4,7 @@ import {
   AlertCircle,
   AlertTriangle,
   Award,
+  BookOpen,
   Braces,
   CheckCircle2,
   Clipboard,
@@ -36,6 +37,7 @@ import {
 } from 'lucide-react';
 import { ApiSettingsModal } from './components/ApiSettingsModal';
 import { ExportMenu } from './components/ExportMenu';
+import { GuideModal } from './components/GuideModal';
 import { LatexDirectConverter } from './components/LatexDirectConverter';
 import { LicenseModal } from './components/LicenseModal';
 import { MarkdownPreview } from './components/MarkdownPreview';
@@ -141,6 +143,7 @@ export default function App() {
     () => localStorage.getItem(API_KEYS_STORAGE) ?? localStorage.getItem(API_KEY_STORAGE) ?? '',
   );
   const [isApiModalOpen, setIsApiModalOpen] = useState(false);
+  const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
   const [appMode, setAppMode] = useState<AppMode>('ocr');
 
   const [engine, setEngine] = useState<OcrEngine>(stored.engine ?? 'gemini');
@@ -225,10 +228,14 @@ export default function App() {
     newKeysText: string,
     newGeminiModel: GeminiModel,
     newMathModel: MathSolverModel,
+    newMaxPages?: number,
+    newCustomPrompt?: string,
   ) {
     setRawApiKeyText(newKeysText);
     setGeminiModel(newGeminiModel);
     setMathModel(newMathModel);
+    if (typeof newMaxPages === 'number') setMaxPages(newMaxPages);
+    if (typeof newCustomPrompt === 'string') setCustomPrompt(newCustomPrompt);
 
     localStorage.setItem(API_KEYS_STORAGE, newKeysText);
     const parsed = parseApiKeys(newKeysText);
@@ -241,7 +248,7 @@ export default function App() {
 
     setNotice({
       kind: 'success',
-      text: `Đã lưu cài đặt API & Models (${parsed.length} key). Model OCR: ${newGeminiModel} | Giải toán: ${newMathModel}`,
+      text: `Đã lưu thiết lập OCR & API (${parsed.length} key). Model OCR: ${newGeminiModel}`,
     });
   }
 
@@ -535,11 +542,11 @@ export default function App() {
         <div className="topbar-inner">
           <div className="brand">
             <span className="brand-icon">
-              <ScanText size={27} />
+              <FileText size={26} />
             </span>
             <span>
-              <strong>MathOCR Studio</strong>
-              <small>PDF/Image → Word Equation &amp; MathType</small>
+              <strong>MathConverter Pro</strong>
+              <small>Xuất Word Equation &amp; MathType OLE</small>
             </span>
           </div>
 
@@ -584,21 +591,29 @@ export default function App() {
               )}
             </button>
 
+            {/* Nút Hướng Dẫn Sử Dụng */}
+            <button
+              type="button"
+              className="api-settings-trigger-btn"
+              onClick={() => setIsGuideModalOpen(true)}
+              title="Hướng dẫn sử dụng & Mẹo chuyển đổi"
+            >
+              <BookOpen size={16} />
+              <span>Hướng dẫn</span>
+            </button>
+
             <button
               type="button"
               className="api-settings-trigger-btn"
               onClick={() => setIsApiModalOpen(true)}
-              title="Cài đặt Gemini API & Models"
+              title="Thiết lập OCR & Quản lý Gemini API Keys"
             >
               <Settings size={16} />
-              <span>Cài đặt API &amp; Models</span>
+              <span>Thiết lập OCR &amp; API</span>
               <span className="key-pill">
                 {apiKeys.length} Key{apiKeys.length > 1 ? 's' : ''}
               </span>
             </button>
-            <span><Sparkles size={15} /> {geminiModel}</span>
-            <span><Sigma size={15} /> Equation</span>
-            <span><Braces size={15} /> MathType OLE</span>
           </div>
         </div>
       </header>
@@ -607,11 +622,10 @@ export default function App() {
       <main className="page-container">
         <section className="hero-card">
           <div className="hero-content">
-            <span className="eyebrow"><WandSparkles size={16} /> OCR tài liệu Toán và bảng biểu</span>
-            <h1>Chuyển PDF hoặc ảnh thành Word, giữ công thức và hình minh họa</h1>
+            <span className="eyebrow"><WandSparkles size={16} /> Chuyển đổi tài liệu Toán học &amp; Bảng biểu</span>
+            <h1>Công cụ Chuyển đổi PDF &amp; Ảnh sang Word chuẩn MathType</h1>
             <p>
-              Tải PDF/ảnh hoặc nhấn Ctrl+V để dán ảnh. Gemini 3.7 / 3.6 / 3.5 nhận nguyên file PDF trong một yêu cầu,
-              tự động xoay vòng nhiều API Key khi gặp giới hạn hạn ngạch Quota.
+              Chuyển đổi nhanh chóng tài liệu Toán học, giữ nguyên định dạng câu hỏi và hình vẽ.
             </p>
           </div>
         </section>
@@ -641,7 +655,7 @@ export default function App() {
               onClick={() => setAppMode('ocr')}
             >
               <ScanText size={18} />
-              <span>OCR PDF / Ảnh</span>
+              <span>Chuyển đổi PDF / Ảnh sang Word</span>
             </button>
             <button
               type="button"
@@ -655,165 +669,9 @@ export default function App() {
         </div>
 
         {appMode === 'ocr' ? (
-          <div className={`main-grid ${settingsCollapsed ? 'settings-collapsed' : ''}`}>
-          {/* Sidebar Settings */}
-          <aside className="settings-column">
-            <div className="card settings-card">
-              <div className="card-title-row">
-                <h2><Settings2 size={20} /> Thiết lập OCR</h2>
-                <button
-                  type="button"
-                  className="icon-button collapse-button"
-                  onClick={() => setSettingsCollapsed((value) => !value)}
-                  title={settingsCollapsed ? 'Mở thiết lập' : 'Thu gọn thiết lập'}
-                >
-                  {settingsCollapsed ? <PanelLeftOpen size={19} /> : <PanelLeftClose size={19} />}
-                </button>
-              </div>
-
-              <div className="settings-content">
-                {/* Gemini API & Models Quick Trigger Card */}
-                <div className="field-group">
-                  <label><KeyRound size={16} /> Gemini API &amp; Models</label>
-                  <div
-                    className="api-quick-card"
-                    onClick={() => setIsApiModalOpen(true)}
-                    title="Bấm để mở cửa sổ Cài đặt API và chọn Model"
-                  >
-                    <div className="api-quick-card-left">
-                      <Settings size={20} style={{ color: 'var(--teal-700)' }} />
-                      <div>
-                        <strong>{apiKeys.length > 0 ? `Đã lưu ${apiKeys.length} API Key` : 'Chưa có API Key'}</strong>
-                        <small>OCR: {geminiModel} | Toán: {mathModel}</small>
-                      </div>
-                    </div>
-                    <span className="button button-light" style={{ minHeight: '30px', padding: '0 8px', fontSize: '0.72rem' }}>
-                      Cài đặt
-                    </span>
-                  </div>
-                </div>
-
-                {/* Engine Selector */}
-                <div className="field-group">
-                  <label>Chế độ nhận dạng</label>
-                  <div className="engine-grid">
-                    <button
-                      type="button"
-                      className={`engine-card ${engine === 'gemini' ? 'active' : ''}`}
-                      onClick={() => setEngine('gemini')}
-                    >
-                      <Sparkles size={21} />
-                      <strong>Gemini + cắt ảnh</strong>
-                      <small>Gửi nguyên PDF một lần, OCR công thức và cắt hình base64.</small>
-                    </button>
-                    <button
-                      type="button"
-                      className={`engine-card ${engine === 'gemma' ? 'active' : ''}`}
-                      onClick={() => setEngine('gemma')}
-                    >
-                      <Table2 size={21} />
-                      <strong>Gemma + bảng</strong>
-                      <small>Một request cho toàn bộ trang, ưu tiên cấu trúc bảng Markdown.</small>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Model Selector */}
-                {engine === 'gemini' ? (
-                  <div className="field-group">
-                    <label htmlFor="model">Model Gemini OCR</label>
-                    <select
-                      id="model"
-                      value={geminiModel}
-                      onChange={(event) => setGeminiModel(event.target.value as GeminiModel)}
-                    >
-                      {GEMINI_MODELS.map((model) => (
-                        <option key={model.id} value={model.id}>
-                          {model.label}
-                        </option>
-                      ))}
-                    </select>
-                    <small className="field-note">
-                      {GEMINI_MODELS.find((model) => model.id === geminiModel)?.hint}
-                    </small>
-                  </div>
-                ) : (
-                  <div className="model-fixed">
-                    <Cpu size={17} />{' '}
-                    <span>
-                      <strong>gemma-4-31b-it</strong>
-                      <small>Model Gemma cố định cho chế độ bảng.</small>
-                    </span>
-                  </div>
-                )}
-
-                <div className="settings-two-columns">
-                  <div className="field-group">
-                    <label htmlFor="max-pages">Số trang tối đa</label>
-                    <input
-                      id="max-pages"
-                      type="number"
-                      min={1}
-                      max={100}
-                      value={maxPages}
-                      onChange={(event) =>
-                        setMaxPages(clampNumber(event.target.value, 1, 100, 30))
-                      }
-                    />
-                  </div>
-                  <div className="field-group">
-                    <label htmlFor="api-mode">Cách gửi API</label>
-                    <input
-                      id="api-mode"
-                      value="1 lần / toàn bộ tài liệu"
-                      readOnly
-                      title="Không còn gọi API riêng cho từng trang"
-                    />
-                  </div>
-                </div>
-
-                <div className="field-group">
-                  <label htmlFor="quality">Độ nét xem trước/cắt ảnh</label>
-                  <select
-                    id="quality"
-                    value={renderScale}
-                    onChange={(event) => setRenderScale(Number(event.target.value))}
-                  >
-                    <option value={1.5}>1.5× — nhẹ</option>
-                    <option value={2}>2× — khuyên dùng</option>
-                    <option value={2.5}>2.5× — công thức nhỏ</option>
-                    <option value={3}>3× — rất nét</option>
-                  </select>
-                </div>
-
-                <div className="field-group">
-                  <label htmlFor="prompt">Prompt bổ sung</label>
-                  <textarea
-                    id="prompt"
-                    className="prompt-textarea"
-                    value={customPrompt}
-                    onChange={(event) => setCustomPrompt(event.target.value)}
-                    placeholder="Ví dụ: Giữ nguyên số thứ tự câu hỏi; tiêu đề in đậm; không dịch tiếng Anh..."
-                  />
-                  <small className="field-note">
-                    Quy tắc LaTeX, bảng và marker cắt ảnh đã được app tự gắn vào prompt lõi.
-                  </small>
-                  <small
-                    className={`backend-state ${
-                      pdfRenderBackendReady ? 'ready' : 'missing'
-                    }`}
-                  >
-                    {pdfRenderBackendReady
-                      ? '✓ Backend PyMuPDF hardcode đã sẵn sàng: ảnh PDF sẽ được render và chèn vào xem trước/Word.'
-                      : '⚠ Chưa hardcode URL PDF Render API thật: PDF đặc biệt có thể chỉ hiện ghi chú thay ảnh.'}
-                  </small>
-                </div>
-              </div>
-            </div>
-          </aside>
-
-          {/* Workspace Area */}
-          <section className="work-column">
+          <div className="main-full-workspace">
+            {/* Workspace Area */}
+            <section className="work-column">
             <div className="card upload-card">
               <div className="card-title-row">
                 <h2><FileUp size={20} /> Nguồn tài liệu</h2>
@@ -886,8 +744,8 @@ export default function App() {
                     <Play size={19} />
                   )}
                   {isProcessing
-                    ? 'Đang OCR tệp gốc...'
-                    : `OCR tệp gốc bằng ${engine === 'gemini' ? geminiModel : 'Gemma'}`}
+                    ? 'Đang chuyển đổi...'
+                    : 'Bắt đầu chuyển đổi'}
                 </button>
               </div>
 
@@ -1103,6 +961,18 @@ export default function App() {
         onSave={handleSaveApiSettings}
         currentGeminiModel={geminiModel}
         currentMathModel={mathModel}
+        currentMaxPages={maxPages}
+        currentCustomPrompt={customPrompt}
+      />
+
+      {/* Guide Modal Dialog */}
+      <GuideModal
+        isOpen={isGuideModalOpen}
+        onClose={() => setIsGuideModalOpen(false)}
+        onOpenApiSettings={() => {
+          setIsGuideModalOpen(false);
+          setIsApiModalOpen(true);
+        }}
       />
 
       {/* License & Activation Modal Dialog */}

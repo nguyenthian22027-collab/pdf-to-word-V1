@@ -6,8 +6,10 @@ import {
   ExternalLink,
   Info,
   KeyRound,
+  Layers,
   Lightbulb,
   LoaderCircle,
+  MessageSquareCode,
   Settings,
   Sparkles,
   WifiOff,
@@ -24,14 +26,22 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   rawApiKeyText: string;
-  onSave: (apiKeysText: string, geminiModel: GeminiModel, mathModel: MathSolverModel) => void;
+  onSave: (
+    apiKeysText: string,
+    geminiModel: GeminiModel,
+    mathModel: MathSolverModel,
+    maxPages?: number,
+    customPrompt?: string,
+  ) => void;
   currentGeminiModel: GeminiModel;
   currentMathModel?: MathSolverModel;
+  currentMaxPages?: number;
+  currentCustomPrompt?: string;
 }
 
 export const OCR_MODEL_OPTIONS: Array<{ id: GeminiModel; label: string }> = [
-  { id: 'gemini-3.7-flash', label: '🌟 gemini-3.7-flash (Model Mới Nhất 2026 / Siêu Nhanh & Chuẩn)' },
-  { id: 'gemini-3.5-flash', label: '🌟 gemini-3.5-flash (Model Mới Nhất 2026)' },
+  { id: 'gemini-3.7-flash', label: '🌟 gemini-3.7-flash (Mới Nhất 2026 / Siêu Nhanh & Chuẩn)' },
+  { id: 'gemini-3.5-flash', label: '🌟 gemini-3.5-flash (Thế hệ mới 2026)' },
   { id: 'gemini-3.0-flash', label: '🚀 gemini-3.0-flash (Thế hệ 3.0 Siêu Nhanh)' },
   { id: 'gemini-3.1-flash-lite', label: '⚡ gemini-3.1-flash-lite (Hạn ngạch Quota cực cao)' },
   { id: 'gemini-3.6-flash', label: '💥 gemini-3.6-flash (Mới ra mắt)' },
@@ -57,10 +67,14 @@ export function ApiSettingsModal({
   onSave,
   currentGeminiModel,
   currentMathModel = 'gemini-3.7-flash',
+  currentMaxPages = 30,
+  currentCustomPrompt = '',
 }: Props) {
   const [apiKeyInput, setApiKeyInput] = useState(rawApiKeyText);
   const [selectedOcrModel, setSelectedOcrModel] = useState<GeminiModel>(currentGeminiModel);
   const [selectedMathModel, setSelectedMathModel] = useState<MathSolverModel>(currentMathModel);
+  const [selectedMaxPages, setSelectedMaxPages] = useState<number>(currentMaxPages);
+  const [selectedCustomPrompt, setSelectedCustomPrompt] = useState<string>(currentCustomPrompt);
 
   const [isChecking, setIsChecking] = useState(false);
   const [healthResults, setHealthResults] = useState<ApiKeyHealthResult[] | null>(null);
@@ -70,9 +84,11 @@ export function ApiSettingsModal({
       setApiKeyInput(rawApiKeyText);
       setSelectedOcrModel(currentGeminiModel);
       setSelectedMathModel(currentMathModel);
+      setSelectedMaxPages(currentMaxPages);
+      setSelectedCustomPrompt(currentCustomPrompt);
       setHealthResults(null);
     }
-  }, [isOpen, rawApiKeyText, currentGeminiModel, currentMathModel]);
+  }, [isOpen, rawApiKeyText, currentGeminiModel, currentMathModel, currentMaxPages, currentCustomPrompt]);
 
   const parsedKeys = useMemo(() => parseApiKeys(apiKeyInput), [apiKeyInput]);
   const keyCount = parsedKeys.length;
@@ -118,7 +134,13 @@ export function ApiSettingsModal({
   }
 
   function handleSave() {
-    onSave(apiKeyInput.trim(), selectedOcrModel, selectedMathModel);
+    onSave(
+      apiKeyInput.trim(),
+      selectedOcrModel,
+      selectedMathModel,
+      selectedMaxPages,
+      selectedCustomPrompt,
+    );
     onClose();
   }
 
@@ -134,9 +156,9 @@ export function ApiSettingsModal({
         <div className="api-modal-header">
           <div className="api-modal-title">
             <span className="api-modal-title-icon">
-              <Settings size={22} className="icon-spin-slow" />
+              <Settings size={22} />
             </span>
-            <h3>Cài đặt Gemini API &amp; Models</h3>
+            <h3>Thiết lập OCR &amp; Gemini API</h3>
           </div>
           <div className="api-modal-header-right">
             <span className={`api-key-badge ${keyCount > 0 ? 'badge-has-keys' : 'badge-empty'}`}>
@@ -166,7 +188,7 @@ export function ApiSettingsModal({
               <code className="api-code-highlight">AIzaSy...</code>
             </p>
             <p className="api-notice-subtext">
-              (Nếu bạn copy chuỗi bắt đầu bằng AQ... từ trang quản lý dự án Cloud, hãy vào{' '}
+              (Lấy key miễn phí tại{' '}
               <a
                 href="https://aistudio.google.com/app/apikey"
                 target="_blank"
@@ -175,7 +197,7 @@ export function ApiSettingsModal({
               >
                 Google AI Studio &rarr; Get API Key <ExternalLink size={12} style={{ display: 'inline' }} />
               </a>{' '}
-              để lấy key chuẩn AIzaSy nhé).
+              để nhận hạn ngạch Quota cao nhất).
             </p>
           </div>
 
@@ -194,10 +216,10 @@ export function ApiSettingsModal({
             <textarea
               id="gemini-api-keys-input"
               className="api-keys-textarea"
-              rows={4}
+              rows={3}
               value={apiKeyInput}
               onChange={(e) => setApiKeyInput(e.target.value)}
-              placeholder={`AIzaSy...\nAIzaSy... (Nhập nhiều key, mỗi key 1 dòng hoặc cách nhau dấu phẩy)`}
+              placeholder={`AIzaSy...\nAIzaSy... (Nhập nhiều key, mỗi key 1 dòng hoặc cách nhau dấu phẩy để tự động xoay vòng)`}
               spellCheck={false}
               autoComplete="off"
             />
@@ -248,47 +270,74 @@ export function ApiSettingsModal({
             </div>
           </div>
 
-          {/* Health check results panel */}
-          {healthResults && healthResults.length > 0 && (
+          {/* Max Pages */}
+          <div className="api-field-block">
+            <label htmlFor="modal-max-pages" className="api-field-label">
+              <Layers size={16} /> Số trang tối đa xử lý mỗi lượt:
+            </label>
+            <input
+              id="modal-max-pages"
+              type="number"
+              min={1}
+              max={100}
+              value={selectedMaxPages}
+              onChange={(e) => setSelectedMaxPages(Math.max(1, Math.min(100, Number(e.target.value) || 30)))}
+            />
+          </div>
+
+          {/* Custom Prompt */}
+          <div className="api-field-block">
+            <label htmlFor="modal-custom-prompt" className="api-field-label">
+              <MessageSquareCode size={16} /> Prompt bổ sung cho AI (tùy chọn):
+            </label>
+            <textarea
+              id="modal-custom-prompt"
+              className="prompt-textarea"
+              rows={2}
+              value={selectedCustomPrompt}
+              onChange={(e) => setSelectedCustomPrompt(e.target.value)}
+              placeholder="Ví dụ: Giữ nguyên số thứ tự câu hỏi; in đậm đáp án; không dịch tiếng Anh..."
+            />
+            <small className="field-note">
+              Quy tắc LaTeX, bảng biểu và marker cắt ảnh được tự động gắn vào prompt lõi.
+            </small>
+          </div>
+
+          {/* Health check results */}
+          {healthResults && (
             <div className="api-health-results">
               <div className="api-health-heading">
-                <Info size={16} />
-                <span>Kết quả kiểm tra ({healthResults.length} key):</span>
+                <Info size={16} /> Kết quả kiểm tra kết nối API:
               </div>
               <div className="api-health-list">
-                {healthResults.map((item, index) => {
-                  const isOk = item.status === 'success';
-                  const isRate = item.status === 'rate_limit';
-                  const isAuth = item.status === 'auth_error';
-                  const isNet = item.status === 'network_error';
-
-                  return (
-                    <div
-                      key={`${item.maskedKey}-${index}`}
-                      className={`api-health-item ${
-                        isOk
-                          ? 'item-ok'
-                          : isRate
-                          ? 'item-rate'
-                          : isAuth
-                          ? 'item-auth'
-                          : 'item-error'
-                      }`}
-                    >
-                      <div className="api-health-item-status">
-                        {isOk && <CheckCircle2 size={17} className="status-icon-ok" />}
-                        {isRate && <AlertTriangle size={17} className="status-icon-rate" />}
-                        {isAuth && <AlertCircle size={17} className="status-icon-auth" />}
-                        {isNet && <WifiOff size={17} className="status-icon-net" />}
-                        {!isOk && !isRate && !isAuth && !isNet && (
-                          <AlertCircle size={17} className="status-icon-error" />
-                        )}
-                        <strong>Key #{index + 1} ({item.maskedKey}):</strong>
-                      </div>
-                      <span className="api-health-item-msg">{item.message}</span>
+                {healthResults.map((res) => (
+                  <div
+                    key={res.keyIndex}
+                    className={`api-health-item ${
+                      res.status === 'success'
+                        ? 'item-ok'
+                        : res.status === 'rate_limit'
+                        ? 'item-rate'
+                        : res.status === 'auth_error'
+                        ? 'item-auth'
+                        : 'item-error'
+                    }`}
+                  >
+                    <div className="api-health-item-status">
+                      {res.status === 'success' ? (
+                        <CheckCircle2 size={16} className="status-icon-ok" />
+                      ) : res.status === 'rate_limit' ? (
+                        <AlertTriangle size={16} className="status-icon-rate" />
+                      ) : res.status === 'network_error' ? (
+                        <WifiOff size={16} className="status-icon-net" />
+                      ) : (
+                        <AlertCircle size={16} className="status-icon-auth" />
+                      )}
+                      <strong>Key #{res.keyIndex + 1} ({res.maskedKey}):</strong>
                     </div>
-                  );
-                })}
+                    <span className="api-health-item-msg">{res.message}</span>
+                  </div>
+                ))}
               </div>
             </div>
           )}
@@ -299,15 +348,18 @@ export function ApiSettingsModal({
           <button
             type="button"
             className="api-btn-check"
-            onClick={() => void handleHealthCheck()}
+            onClick={handleHealthCheck}
             disabled={isChecking}
           >
             {isChecking ? (
-              <LoaderCircle size={17} className="spin" />
+              <>
+                <LoaderCircle size={15} className="spin" /> Đang kiểm tra...
+              </>
             ) : (
-              <Zap size={17} />
+              <>
+                <CheckCircle2 size={15} /> Kiểm tra API Key
+              </>
             )}
-            {isChecking ? 'Đang kiểm tra...' : 'Kiểm tra kết nối'}
           </button>
 
           <div className="api-modal-footer-actions">
@@ -315,17 +367,15 @@ export function ApiSettingsModal({
               type="button"
               className="api-btn-close"
               onClick={onClose}
-              disabled={isChecking}
             >
-              Đóng
+              Hủy
             </button>
             <button
               type="button"
               className="api-btn-save"
               onClick={handleSave}
-              disabled={isChecking}
             >
-              Xong &amp; Lưu
+              Lưu Thiết Lập
             </button>
           </div>
         </div>
