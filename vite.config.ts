@@ -38,4 +38,17 @@ export default defineConfig({
     target: 'es2022',
     chunkSizeWarningLimit: 1800,
   },
+  server: {
+    proxy: {
+      // Proxy /mathtype-api/* -> https://latex2mathtypeweb.onrender.com/*
+      // Giải quyết CORS khi chạy dev (localhost)
+      '/mathtype-api': {
+        target: 'https://latex2mathtypeweb.onrender.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/mathtype-api/, ''),
+        secure: true,
+      },
+    },
+  },
 });
+

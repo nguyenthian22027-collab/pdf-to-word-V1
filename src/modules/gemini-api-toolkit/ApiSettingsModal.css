@@ -1,0 +1,360 @@
+/* ==========================================================================
+   Gemini API Settings Modal - Scoped Styles
+   ========================================================================== */
+
+.gemini-api-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+  animation: geminiModalFadeIn 0.2s ease-out;
+  box-sizing: border-box;
+}
+
+.gemini-api-modal-content {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  animation: geminiModalScaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: #1e293b;
+  box-sizing: border-box;
+}
+
+.gemini-api-modal-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+}
+
+.gemini-api-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gemini-api-modal-title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: #0ea5e9;
+  color: white;
+  border-radius: 10px;
+}
+
+.gemini-api-modal-title h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.gemini-api-modal-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gemini-api-key-badge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+}
+
+.gemini-badge-has-keys {
+  background: #ecfdf5;
+  color: #059669;
+  border-color: #a7f3d0;
+}
+
+.gemini-badge-empty {
+  background: #f1f5f9;
+  color: #64748b;
+  border-color: #cbd5e1;
+}
+
+.gemini-api-modal-close-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.gemini-api-modal-close-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.gemini-api-modal-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.gemini-api-notice-box {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 0.88rem;
+}
+
+.gemini-api-notice-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #166534;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.gemini-api-notice-text {
+  margin: 0 0 4px 0;
+  color: #15803d;
+}
+
+.gemini-api-code-highlight {
+  background: #dcfce7;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-weight: bold;
+  color: #14532d;
+}
+
+.gemini-api-notice-subtext {
+  margin: 0;
+  color: #4b5563;
+  font-size: 0.82rem;
+}
+
+.gemini-api-link {
+  color: #0284c7;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.gemini-api-link:hover {
+  text-decoration: underline;
+}
+
+.gemini-api-field-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gemini-api-field-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gemini-api-field-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.gemini-api-key-valid-indicator {
+  font-size: 0.8rem;
+  color: #10b981;
+  font-weight: 600;
+}
+
+.gemini-api-keys-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-family: monospace;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #0f172a;
+  background: #f8fafc;
+  resize: vertical;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
+}
+
+.gemini-api-keys-textarea:focus {
+  outline: none;
+  border-color: #0ea5e9;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+}
+
+.gemini-api-models-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.gemini-api-select-wrapper select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  font-size: 0.9rem;
+  color: #0f172a;
+  outline: none;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+
+.gemini-api-select-wrapper select:focus {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+}
+
+.gemini-api-health-section {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 16px;
+}
+
+.gemini-api-health-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.gemini-api-health-btn:hover:not(:disabled) {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.gemini-api-health-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.gemini-api-health-results-table {
+  margin-top: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.gemini-api-health-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.85rem;
+}
+
+.gemini-api-health-item:last-child {
+  border-bottom: none;
+}
+
+.gemini-api-health-item.status-success {
+  background: #f0fdf4;
+}
+
+.gemini-api-health-item.status-error {
+  background: #fef2f2;
+}
+
+.gemini-api-health-item.status-rate_limit {
+  background: #fffbeb;
+}
+
+.gemini-api-modal-footer {
+  padding: 16px 24px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.gemini-btn-secondary {
+  padding: 9px 18px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.gemini-btn-secondary:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.gemini-btn-primary {
+  padding: 9px 20px;
+  background: #0ea5e9;
+  border: 1px solid transparent;
+  color: #ffffff;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.gemini-btn-primary:hover {
+  background: #0284c7;
+}
+
+.gemini-spin {
+  animation: geminiSpin 1s linear infinite;
+}
+
+@keyframes geminiSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes geminiModalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes geminiModalScaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}

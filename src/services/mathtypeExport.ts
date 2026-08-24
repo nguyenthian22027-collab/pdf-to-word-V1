@@ -3,6 +3,15 @@ import { applyWordDefaults, sanitizeMarkdownForPandoc } from './docxExportServic
 
 const MATH_API = MATHTYPE_API;
 
+// Khi chạy trên localhost (dev), dùng Vite proxy để tránh CORS.
+// Khi deploy production, gọi thẳng backend (CORS đã được cấu hình trên server).
+function getMathTypeApiBase(): string {
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    return '/mathtype-api';
+  }
+  return MATH_API;
+}
+
 export interface MathTypeResult {
   converted: number;
   failed: number;
@@ -24,11 +33,24 @@ export async function exportMathTypeDocx(
 
   const safeMarkdown = sanitizeMarkdownForPandoc(markdown);
 
-  const resp = await fetch(`${MATH_API}/api/convert-markdown`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ markdown: safeMarkdown, formula_mode: 'mathtype' }),
-  });
+  const apiBase = getMathTypeApiBase();
+  console.log('[MathType] Gửi request tới:', `${apiBase}/api/convert-markdown`);
+
+  let resp: Response;
+  try {
+    resp = await fetch(`${apiBase}/api/convert-markdown`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ markdown: safeMarkdown, formula_mode: 'mathtype' }),
+    });
+  } catch (networkErr) {
+    console.error('[MathType] Lỗi mạng khi gọi backend:', networkErr);
+    throw new Error(`Không kết nối được tới máy chủ MathType: ${networkErr instanceof Error ? networkErr.message : String(networkErr)}`);
+  }
+
+  console.log('[MathType] Phản hồi:', resp.status, resp.statusText);
+  console.log('[MathType] X-Stats:', resp.headers.get('X-Stats'));
+  console.log('[MathType] Content-Type:', resp.headers.get('Content-Type'));
 
   if (!resp.ok) {
     let msg = `Lỗi máy chủ (${resp.status})`;
@@ -46,21 +68,36 @@ export async function exportMathTypeDocx(
     .map((n) => parseInt(n, 10) || 0);
 
   const rawBlob = await resp.blob();
+  console.log('[MathType] Blob nhận được:', rawBlob.size, 'bytes, type:', rawBlob.type);
+
   let finalBlob = rawBlob;
   try {
     finalBlob = await applyWordDefaults(rawBlob, markdown);
+    console.log('[MathType] Sau applyWordDefaults:', finalBlob.size, 'bytes');
   } catch (err) {
-    console.warn('Không thể hậu xử lý font/viền bảng Word cho MathType docx:', err);
+    console.warn('[MathType] Không thể hậu xử lý font/viền bảng:', err);
+    // Tiếp tục dùng rawBlob nếu applyWordDefaults thất bại
   }
 
-  const url = URL.createObjectURL(finalBlob);
+  // Đảm bảo blob có đúng MIME type cho .docx
+  const docxBlob = new Blob([finalBlob], {
+    type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  });
+
+  console.log('[MathType] Bắt đầu tải file:', filename);
+  const url = URL.createObjectURL(docxBlob);
   const a = document.createElement('a');
   a.href = url;
   a.download = filename;
+  a.style.display = 'none';
   document.body.appendChild(a);
   a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+  // Delay revoke để trình duyệt kịp đọc blob trước khi URL bị huỷ
+  setTimeout(() => {
+    a.remove();
+    URL.revokeObjectURL(url);
+    console.log('[MathType] Đã tải xong và giải phóng URL.');
+  }, 5000);
 
   return { converted, failed };
 }
