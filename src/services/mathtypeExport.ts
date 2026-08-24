@@ -3,14 +3,11 @@ import { applyWordDefaults, sanitizeMarkdownForPandoc } from './docxExportServic
 
 const MATH_API = MATHTYPE_API;
 
-// Khi chạy trên localhost (dev), dùng Vite proxy để tránh CORS.
-// Khi deploy production, gọi thẳng backend (CORS đã được cấu hình trên server).
-function getMathTypeApiBase(): string {
-  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-    return '/mathtype-api';
-  }
-  return MATH_API;
-}
+// Luôn dùng đường dẫn proxy /mathtype-api thay vì gọi thẳng backend.
+// - Khi dev (localhost): Vite proxy /mathtype-api -> latex2mathtypeweb.onrender.com
+// - Khi production (Vercel): Vercel rewrites /mathtype-api -> latex2mathtypeweb.onrender.com
+// Cả 2 đều tránh CORS vì request đi qua server trung gian, không phải từ trình duyệt.
+const MATHTYPE_PROXY = '/mathtype-api';
 
 export interface MathTypeResult {
   converted: number;
@@ -33,7 +30,7 @@ export async function exportMathTypeDocx(
 
   const safeMarkdown = sanitizeMarkdownForPandoc(markdown);
 
-  const apiBase = getMathTypeApiBase();
+  const apiBase = MATHTYPE_PROXY;
   console.log('[MathType] Gửi request tới:', `${apiBase}/api/convert-markdown`);
 
   let resp: Response;
