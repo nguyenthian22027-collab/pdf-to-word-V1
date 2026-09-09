@@ -8,6 +8,8 @@ echo                 ĐẨY MÃ NGUỒN LÊN GITHUB (GIT PUSH)
 echo ========================================================================
 echo.
 
+git add -A
+git diff-index --quiet HEAD || git commit -m "update: cap nhat ma nguon tu dong"
 git push origin main
 
 echo.
