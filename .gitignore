@@ -27,3 +27,8 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+
+# License & Local skill files
+license.key
+.agents
+tao-de-toan-tuong-tu/
