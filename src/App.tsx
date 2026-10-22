@@ -21,8 +21,10 @@ import {
   Info,
   KeyRound,
   LoaderCircle,
+  MessageCircle,
   PanelLeftClose,
   PanelLeftOpen,
+  Phone,
   Play,
   ScanText,
   Settings,
@@ -86,9 +88,14 @@ interface StoredSettings {
 
 const GEMINI_MODELS: Array<{ id: GeminiModel; label: string; hint: string }> = [
   {
+    id: 'gemini-3.8-flash',
+    label: '🚀 Gemini 3.8 Flash (Thế hệ 3.8 Mới Nhất / Đỉnh Cao)',
+    hint: 'Thế hệ 3.8 mới nhất của Google, suy luận đa bước cực mạnh và nhận diện chuẩn xác nhất',
+  },
+  {
     id: 'gemini-3.7-flash',
-    label: '🌟 Gemini 3.7 Flash (Mới Nhất 2026 / Siêu Nhanh)',
-    hint: 'Thế hệ 3.7 mới nhất, tối ưu nhận diện công thức Toán và bố cục phức tạp',
+    label: '🌟 Gemini 3.7 Flash (Mặc Định / Siêu Nhanh & Chuẩn)',
+    hint: 'Thế hệ 3.7 tối ưu nhận diện công thức Toán và bố cục phức tạp',
   },
   {
     id: 'gemini-3.6-flash',
@@ -537,6 +544,41 @@ export default function App() {
 
   return (
     <div className="app-shell">
+      {/* Thanh thông báo liên hệ nổi bật khi vào ứng dụng */}
+      <div className="top-contact-banner">
+        <div className="top-contact-inner">
+          <div className="top-contact-content">
+            <span className="top-contact-badge">
+              <Sparkles size={14} className="text-amber-300" />
+              <span>Hỗ trợ &amp; Bản quyền</span>
+            </span>
+            <span className="top-contact-prefix">Để sử dụng ứng dụng xin liên hệ thầy</span>
+            <strong className="top-contact-name">NGUYỄN BỈNH KHÔI - 0909 461 641</strong>
+            <span className="top-contact-sub">(Zalo/Hotline)</span>
+          </div>
+          <div className="top-contact-actions">
+            <a
+              href="https://zalo.me/0909461641"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="top-contact-btn-zalo"
+              title="Nhắn Zalo thầy Nguyễn Bỉnh Khôi"
+            >
+              <MessageCircle size={15} />
+              <span>Nhắn Zalo</span>
+            </a>
+            <a
+              href="tel:0909461641"
+              className="top-contact-btn-phone"
+              title="Gọi Hotline thầy Nguyễn Bỉnh Khôi"
+            >
+              <Phone size={15} />
+              <span>0909 461 641</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
       {/* Topbar */}
       <header className="topbar">
         <div className="topbar-inner">
@@ -627,6 +669,21 @@ export default function App() {
             <p>
               Chuyển đổi nhanh chóng tài liệu Toán học, giữ nguyên định dạng câu hỏi và hình vẽ.
             </p>
+            <div className="hero-contact-notice">
+              <span className="hero-contact-icon">📢</span>
+              <span className="hero-contact-prefix">Để sử dụng ứng dụng xin liên hệ thầy</span>
+              <strong className="hero-contact-name">NGUYỄN BỈNH KHÔI - 0909 461 641</strong>
+              <span className="hero-contact-sub">(Zalo/Hotline)</span>
+              <a
+                href="https://zalo.me/0909461641"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hero-contact-zalo-link"
+              >
+                <MessageCircle size={14} />
+                <span>Nhắn Zalo</span>
+              </a>
+            </div>
           </div>
         </section>
 

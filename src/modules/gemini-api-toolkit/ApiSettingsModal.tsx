@@ -18,7 +18,8 @@ import { checkMultipleApiKeysHealth, parseApiKeys } from './apiHealthService';
 import './ApiSettingsModal.css';
 
 export const OCR_MODEL_OPTIONS: Array<{ id: GeminiModel; label: string }> = [
-  { id: 'gemini-3.7-flash', label: '🌟 gemini-3.7-flash (Mới Nhất / Siêu Nhanh & Chuẩn)' },
+  { id: 'gemini-3.8-flash', label: '🚀 gemini-3.8-flash (Thế hệ 3.8 Mới Nhất)' },
+  { id: 'gemini-3.7-flash', label: '🌟 gemini-3.7-flash (Mặc Định / Siêu Nhanh & Chuẩn)' },
   { id: 'gemini-3.5-flash', label: '🌟 gemini-3.5-flash (Thế hệ 3.5)' },
   { id: 'gemini-3.0-flash', label: '🚀 gemini-3.0-flash (Thế hệ 3.0 Siêu Nhanh)' },
   { id: 'gemini-3.1-flash-lite', label: '⚡ gemini-3.1-flash-lite (Hạn ngạch Quota cực cao)' },

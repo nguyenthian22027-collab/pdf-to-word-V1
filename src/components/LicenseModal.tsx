@@ -208,7 +208,7 @@ export function LicenseModal({
               </button>
             </div>
             <p className="license-hwid-hint">
-              💡 Hãy copy Mã Máy này và gửi qua Zalo <strong>0988.250.112</strong> để nhận mã kích hoạt cho ứng dụng <strong>pdf-to-word-mathtype</strong>.
+              💡 Để sử dụng hoặc kích hoạt ứng dụng, hãy copy Mã Máy này và gửi qua Zalo/Hotline: <strong className="text-indigo-700">NGUYỄN BỈNH KHÔI - 0909 461 641 (Zalo/Hotline)</strong> để nhận mã kích hoạt.
             </p>
           </div>
 
@@ -321,16 +321,16 @@ export function LicenseModal({
 
               <div className="payment-zalo-cta">
                 <a
-                  href="https://zalo.me/0988250112"
+                  href="https://zalo.me/0909461641"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="button button-primary zalo-btn"
                 >
                   <MessageCircle size={18} />
-                  Nhắn Zalo: 0988.250.112
+                  Nhắn Zalo: 0909 461 641
                 </a>
                 <span className="text-[11px] text-slate-500 text-center block mt-1.5">
-                  (Gửi biên lai & Mã máy qua Zalo để nhận mã trong 1 phút)
+                  (Liên hệ thầy <strong>Nguyễn Bỉnh Khôi</strong> để nhận mã kích hoạt nhanh)
                 </span>
               </div>
             </div>

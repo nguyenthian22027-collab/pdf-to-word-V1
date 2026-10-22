@@ -40,7 +40,8 @@ interface Props {
 }
 
 export const OCR_MODEL_OPTIONS: Array<{ id: GeminiModel; label: string }> = [
-  { id: 'gemini-3.7-flash', label: '🌟 gemini-3.7-flash (Mới Nhất 2026 / Siêu Nhanh & Chuẩn)' },
+  { id: 'gemini-3.8-flash', label: '🚀 gemini-3.8-flash (Mới Nhất / Thế hệ 3.8 Đỉnh Cao)' },
+  { id: 'gemini-3.7-flash', label: '🌟 gemini-3.7-flash (Mặc Định / Siêu Nhanh & Chuẩn)' },
   { id: 'gemini-3.5-flash', label: '🌟 gemini-3.5-flash (Thế hệ mới 2026)' },
   { id: 'gemini-3.0-flash', label: '🚀 gemini-3.0-flash (Thế hệ 3.0 Siêu Nhanh)' },
   { id: 'gemini-3.1-flash-lite', label: '⚡ gemini-3.1-flash-lite (Hạn ngạch Quota cực cao)' },
@@ -52,7 +53,8 @@ export const OCR_MODEL_OPTIONS: Array<{ id: GeminiModel; label: string }> = [
 ];
 
 export const MATH_MODEL_OPTIONS: Array<{ id: MathSolverModel; label: string }> = [
-  { id: 'gemini-3.7-flash', label: 'gemini-3.7-flash' },
+  { id: 'gemini-3.8-flash', label: 'gemini-3.8-flash (Mới Nhất)' },
+  { id: 'gemini-3.7-flash', label: 'gemini-3.7-flash (Mặc Định)' },
   { id: 'gemini-3.6-flash', label: 'gemini-3.6-flash' },
   { id: 'gemini-3.5-flash', label: 'gemini-3.5-flash' },
   { id: 'gemini-3.0-flash', label: 'gemini-3.0-flash' },

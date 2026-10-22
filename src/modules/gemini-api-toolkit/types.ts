@@ -15,6 +15,7 @@ export interface ApiKeyHealthResult {
 }
 
 export type GeminiModel =
+  | 'gemini-3.8-flash'
   | 'gemini-3.7-flash'
   | 'gemini-3.5-flash'
   | 'gemini-3.0-flash'
@@ -26,6 +27,7 @@ export type GeminiModel =
   | 'auto';
 
 export type MathSolverModel =
+  | 'gemini-3.8-flash'
   | 'gemini-3.7-flash'
   | 'gemini-3.6-flash'
   | 'gemini-3.5-flash'

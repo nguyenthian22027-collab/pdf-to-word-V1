@@ -3,6 +3,7 @@ export type AppMode = 'ocr' | 'latex';
 export type OcrEngine = 'gemini' | 'gemma';
 
 export type GeminiModel =
+  | 'gemini-3.8-flash'
   | 'gemini-3.7-flash'
   | 'gemini-3.6-flash'
   | 'gemini-3.5-flash'
@@ -15,6 +16,7 @@ export type GeminiModel =
   | 'gemini-3-flash-preview';
 
 export type MathSolverModel =
+  | 'gemini-3.8-flash'
   | 'gemini-3.7-flash'
   | 'gemini-3.6-flash'
   | 'gemini-3.5-flash'
