@@ -1,27 +1,27 @@
 @echo off
-chcp 65001 >nul
-title Đẩy Code Lên GitHub - MathOCR Studio
+title Day Code Len GitHub - MathOCR Studio
 cd /d "%~dp0"
 
 echo ========================================================================
-echo                 ĐẨY MÃ NGUỒN LÊN GITHUB (GIT PUSH)
+echo                 DAY MA NGUON LEN GITHUB (GIT PUSH)
 echo ========================================================================
 echo.
 
-echo Đang tự động kiểm tra và lưu các thay đổi...
+echo [1/2] Dang tu dong kiem tra va luu thay doi...
 git add -A
 git diff-index --quiet HEAD || git commit -m "update: cap nhat ma nguon tu dong"
 
-echo Đang đẩy mã nguồn lên GitHub, vui lòng chờ trong giây lát...
+echo.
+echo [2/2] Dang day ma nguon len GitHub...
 git push origin main
 set PUSH_STATUS=%errorlevel%
 
 echo.
 if %PUSH_STATUS% NEQ 0 (
-    echo [THÔNG BÁO] Quá trình đẩy code chưa hoàn tất hoặc cần xác thực tài khoản.
-    echo Nếu màn hình xuất hiện cửa sổ trình duyệt đăng nhập GitHub, thầy/cô vui lòng bấm xác thực.
+    echo [THONG BAO] Qua trinh day code chua hoan tat hoac can xac thuc.
+    echo Neu man hinh xuat hien cua so trinh duyet dang nhap GitHub, vui long bam xac thuc.
 ) else (
-    echo [THÀNH CÔNG] Đã đẩy toàn bộ mã nguồn lên GitHub thành công rực rỡ!
+    echo [THANH CONG] Da day toan bo ma nguon len GitHub thanh cong!
 )
 
 echo.
