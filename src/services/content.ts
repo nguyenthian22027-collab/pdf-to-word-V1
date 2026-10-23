@@ -158,6 +158,11 @@ export function normalizeAiMarkdown(input: string): string {
   return text
     .replace(/\\\[([\s\S]*?)\\\]/g, (_match, formula: string) => `\n\n$$\n${formula.trim()}\n$$\n\n`)
     .replace(/\\\(([\s\S]*?)\\\)/g, (_match, formula: string) => `$${formula.trim()}$`)
+    .replace(/(\$\$[\s\S]*?\$\$)|(?:\$([ \t]*)([^$\n]+?)([ \t]*)\$)/g, (match, display, _lSpace, inner) => {
+      if (display) return display;
+      if (!inner || !inner.trim()) return match;
+      return `$${inner.trim()}$`;
+    })
     .replace(/[ \t]+\n/g, '\n')
     .replace(/\n{4,}/g, '\n\n\n')
     .trim();

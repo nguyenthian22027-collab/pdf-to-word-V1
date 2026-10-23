@@ -990,7 +990,13 @@
         try {
           let text = await callGeminiWithRotation(base64Data, promptText, activeKeys, modelToUse);
           text = text.replace(/```(?:latex|tex|math|markdown)?\n?/g, '').replace(/```/g, '');
-          text = text.replace(/\$\$\$/g, '$$').replace(/\cdot/g, '.');
+          text = text.replace(/\$\$\$/g, '$$');
+          // Chuẩn hóa khoảng trắng trong công thức inline ($ abc $ -> $abc$)
+          text = text.replace(/(\$\$[\s\S]*?\$\$)|(?:\$([ \t]*)([^$\n]+?)([ \t]*)\$)/g, (m, display, _lSpace, inner) => {
+            if (display) return display;
+            if (!inner || !inner.trim()) return m;
+            return `$${inner.trim()}$`;
+          });
           text = formatMultipleChoice(text);
 
           // Cắt ảnh minh họa
@@ -1002,7 +1008,12 @@
 
           let imgCount = 0;
           while ((match = regex.exec(text)) !== null) {
-            let ymin = parseInt(match[1]), xmin = parseInt(match[2]), ymax = parseInt(match[3]), xmax = parseInt(match[4]);
+            const rawY1 = parseInt(match[1], 10), rawX1 = parseInt(match[2], 10);
+            const rawY2 = parseInt(match[3], 10), rawX2 = parseInt(match[4], 10);
+            const ymin = Math.max(0, Math.min(rawY1, rawY2) - 10);
+            const xmin = Math.max(0, Math.min(rawX1, rawX2) - 10);
+            const ymax = Math.min(1000, Math.max(rawY1, rawY2) + 10);
+            const xmax = Math.min(1000, Math.max(rawX1, rawX2) + 10);
             const sX = (xmin / 1000) * img.width; const sY = (ymin / 1000) * img.height;
             const sW = ((xmax - xmin) / 1000) * img.width; const sH = ((ymax - ymin) / 1000) * img.height;
             if (sW > 5 && sH > 5) {

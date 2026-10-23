@@ -191,6 +191,13 @@ export function sanitizeMarkdownForPandoc(markdown: string): string {
   // Tự động nối liền các hàng bảng bị phân cách bởi dòng trống
   normalized = fixBrokenMarkdownTables(normalized);
 
+  // Tránh lỗi Pandoc không nhận công thức inline do có khoảng trắng sát dấu $ ($ abc $ -> $abc$)
+  normalized = normalized.replace(/(\$\$[\s\S]*?\$\$)|(?:\$([ \t]*)([^$\n]+?)([ \t]*)\$)/g, (match, display, _lSpace, inner) => {
+    if (display) return display;
+    if (!inner || !inner.trim()) return match;
+    return `$${inner.trim()}$`;
+  });
+
   // Đổi các ảnh data URI thành placeholder cố định.
   // Điều này giúp Pandoc không bị lỗi/bỏ sót khi xử lý ảnh data URI quá dài trong table.
   let imgIndex = 0;
