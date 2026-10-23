@@ -110,7 +110,12 @@ export async function processOriginalDocument(
   const candidateModels: string[] =
     options.model === 'auto'
       ? ['gemini-3.7-flash', 'gemini-3.8-flash', 'gemini-2.0-flash', 'gemini-1.5-flash']
-      : [options.model];
+      : [
+          options.model,
+          ...(options.model !== 'gemini-2.0-flash' && options.model !== 'gemini-1.5-flash'
+            ? (['gemini-2.0-flash', 'gemini-1.5-flash'] as OcrModel[])
+            : []),
+        ];
 
   const inputParts = await buildInputParts(options);
   const basePrompt = options.engine === 'gemini' ? GEMINI_DOCUMENT_PROMPT : GEMMA_DOCUMENT_PROMPT;
@@ -139,8 +144,10 @@ export async function processOriginalDocument(
 
   // Thử lần lượt từng model và từng key nếu gặp lỗi 429 hoặc xác thực
   for (const modelToTry of candidateModels) {
+
     for (let keyIdx = 0; keyIdx < allKeys.length; keyIdx += 1) {
       const activeKey = allKeys[keyIdx];
+      const modelToUse = modelToTry;
       const ai = new GoogleGenAI({ apiKey: activeKey });
 
       try {
@@ -164,7 +171,7 @@ export async function processOriginalDocument(
 
         if (!fullText.trim()) {
           const response = await ai.models.generateContent({
-            model: modelToTry,
+            model: modelToUse,
             config,
             contents,
           });
@@ -179,6 +186,13 @@ export async function processOriginalDocument(
         lastError = error;
         const msg = error instanceof Error ? error.message : String(error);
         console.warn(`Thử model ${modelToTry} với Key #${keyIdx + 1} thất bại:`, msg);
+
+        // Nếu model không tồn tại trên Google API (404/NOT_FOUND), tự động chuyển sang model dự phòng
+        const isNotFound = /404|NOT_FOUND|model.*not found/i.test(msg);
+        if (isNotFound) {
+          console.warn(`Model ${modelToTry} chưa khả dụng, tự động chuyển sang model tiếp theo...`);
+          break;
+        }
 
         // Nếu còn key khác và gặp lỗi 429 hoặc 401/403 thì chuyển key tiếp theo
         const isQuotaOrAuth = /429|RESOURCE_EXHAUSTED|rate limit|quota|401|403|API_KEY_INVALID/i.test(msg);
@@ -675,8 +689,13 @@ function normalizeCoordinateTuple(values: number[]): [number, number, number, nu
   // Bản cũ chuẩn hóa từng số riêng lẻ nên marker kiểu 80,200,180,600 bị hiểu
   // 80 -> 0.8 nhưng 200 -> 0.2, dẫn đến crop vùng trắng.
   const divisor = maximum <= 1 ? 1 : 1000;
-  const normalized = values.map((value) => Math.min(1, Math.max(0, value / divisor)));
-  return normalized as [number, number, number, number];
+  const [v1, v2, v3, v4] = values.map((value) => Math.min(1, Math.max(0, value / divisor)));
+  const top = Math.min(v1, v3);
+  const bottom = Math.max(v1, v3);
+  const left = Math.min(v2, v4);
+  const right = Math.max(v2, v4);
+  return [top, left, bottom, right];
+
 }
 
 function stripOuterCodeFence(text: string): string {
@@ -892,6 +911,12 @@ export async function aiOptimizeAndFixLatex(options: AiOptimizeLatexOptions): Pr
   if (!options.content.trim()) return options.content;
 
   const modelToUse = options.model === 'auto' || !options.model ? 'gemini-3.7-flash' : options.model;
+  const candidateModels: string[] = [
+    modelToUse,
+    ...(modelToUse !== 'gemini-2.0-flash' && modelToUse !== 'gemini-1.5-flash'
+      ? ['gemini-2.0-flash', 'gemini-1.5-flash']
+      : []),
+  ];
 
   const { maskedText, imageMap } = maskImagesForAi(options.content);
 
@@ -914,14 +939,15 @@ ${maskedText}`;
 
   let lastError: unknown;
 
-  for (let keyIdx = 0; keyIdx < allKeys.length; keyIdx += 1) {
+  for (const modelToTry of candidateModels) {
+    for (let keyIdx = 0; keyIdx < allKeys.length; keyIdx += 1) {
     const activeKey = allKeys[keyIdx];
     const ai = new GoogleGenAI({ apiKey: activeKey });
 
     try {
       let fullText = '';
       const stream = await ai.models.generateContentStream({
-        model: modelToUse,
+        model: modelToTry,
         config: { maxOutputTokens: MAX_OUTPUT_TOKENS },
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
       });
@@ -936,7 +962,7 @@ ${maskedText}`;
 
       if (!fullText.trim()) {
         const response = await ai.models.generateContent({
-          model: modelToUse,
+          model: modelToTry,
           config: { maxOutputTokens: MAX_OUTPUT_TOKENS },
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
         });
@@ -948,6 +974,9 @@ ${maskedText}`;
     } catch (error) {
       lastError = error;
       const msg = error instanceof Error ? error.message : String(error);
+      if (/404|NOT_FOUND|model.*not found/i.test(msg)) {
+        break;
+      }
       if (/429|quota|rate limit|401|403/i.test(msg) && keyIdx < allKeys.length - 1) {
         continue;
       }
@@ -955,6 +984,8 @@ ${maskedText}`;
     }
   }
 
-  throw new Error(toReadableApiError(lastError, modelToUse));
+  }
+
+  throw new Error(toReadableApiError(lastError, candidateModels[0]));
 }
 

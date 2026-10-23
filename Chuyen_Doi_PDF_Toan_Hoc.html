@@ -902,13 +902,21 @@
     // HÀM GỌI API VỚI TÍNH NĂNG XOAY VÒNG KEY
     async function callGeminiWithRotation(base64Data, promptText, activeKeys, modelToUse) {
       let lastError = null;
+      const modelsToTry = [
+        modelToUse,
+        ...(modelToUse !== 'gemini-2.0-flash' && modelToUse !== 'gemini-1.5-flash'
+          ? ['gemini-2.0-flash', 'gemini-1.5-flash']
+          : [])
+      ];
+
+      for (const currentModel of modelsToTry) {
 
       for (let k = 0; k < activeKeys.length; k++) {
         const keyIdx = (state.currentKeyIndex + k) % activeKeys.length;
         const currentKey = activeKeys[keyIdx];
 
         try {
-          const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelToUse}:generateContent?key=${currentKey}`, {
+          const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${currentKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -925,6 +933,11 @@
           const errMsg = (resData.error?.message || '').toLowerCase();
           lastError = resData.error?.message || `Mã lỗi ${resp.status}`;
 
+          if (resp.status === 404 || errMsg.includes('not found')) {
+            console.warn(`Model ${currentModel} chưa khả dụng (${lastError}), tự động chuyển sang model tiếp theo...`);
+            break;
+          }
+
           // Nếu hết Quota 429 hoặc Key không hợp lệ thì lập tức xoay sang Key tiếp theo
           if (resp.status === 429 || errMsg.includes('quota') || resp.status === 400 || resp.status === 403) {
             console.warn(`Key ${keyIdx + 1} gặp lỗi (${lastError}), đang tự động đổi sang Key khác...`);
@@ -937,7 +950,9 @@
         }
       }
 
-      throw new Error(`Đã thử tất cả API Key nhưng không thành công: ${lastError}`);
+      }
+
+      throw new Error(`Đã thử tất cả API Key và Model nhưng không thành công: ${lastError}`);
     }
 
     // BẮT ĐẦU OCR

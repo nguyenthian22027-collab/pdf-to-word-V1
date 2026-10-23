@@ -86,6 +86,30 @@ export async function checkSingleApiKeyHealth(
       errMsg = response.statusText;
     }
 
+    if (response.status === 404 && model !== 'gemini-2.0-flash') {
+      try {
+        const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(cleanKey)}`;
+        const fallbackResp = await fetch(fallbackUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (fallbackResp.ok) {
+          const fallbackLatency = Math.round(performance.now() - startTime);
+          return {
+            keyIndex,
+            maskedKey,
+            fullKey: cleanKey,
+            status: 'success',
+            message: `Key hoạt động tốt trên Gemini 2.0 (Model ${model} chưa mở cho key này)`,
+            latencyMs: fallbackLatency,
+          };
+        }
+      } catch {
+        // bỏ qua nếu lỗi mạng fallback
+      }
+    }
+
     if (response.status === 401 || response.status === 403) {
       return {
         keyIndex,
