@@ -111,8 +111,9 @@ export async function processOriginalDocument(
   const targetModel = resolveGeminiApiModel(options.model) as OcrModel;
   const candidateModels: OcrModel[] = [
     targetModel,
-    ...(targetModel !== 'gemini-2.0-flash' ? ['gemini-2.0-flash' as OcrModel] : []),
-    ...(targetModel !== 'gemini-1.5-flash' ? ['gemini-1.5-flash' as OcrModel] : []),
+    ...(targetModel !== 'gemini-3.6-flash' ? ['gemini-3.6-flash' as OcrModel] : []),
+    ...(targetModel !== 'gemini-3.5-flash' ? ['gemini-3.5-flash' as OcrModel] : []),
+    ...(targetModel !== 'gemini-3.1-flash-lite' ? ['gemini-3.1-flash-lite' as OcrModel] : []),
   ];
 
   const inputParts = await buildInputParts(options);
@@ -186,7 +187,7 @@ export async function processOriginalDocument(
         console.warn(`Thử model ${modelToTry} với Key #${keyIdx + 1} thất bại:`, msg);
 
         // Nếu model không tồn tại trên Google API (404/NOT_FOUND), tự động chuyển sang model dự phòng
-        const isNotFound = /404|NOT_FOUND|model.*not found/i.test(msg);
+        const isNotFound = /404|NOT_FOUND|503|UNAVAILABLE|high demand|overloaded|timeout|timed out|abort/i.test(msg);
         if (isNotFound) {
           console.warn(`Model ${modelToTry} chưa khả dụng, tự động chuyển sang model tiếp theo...`);
           break;
@@ -911,8 +912,9 @@ export async function aiOptimizeAndFixLatex(options: AiOptimizeLatexOptions): Pr
   const targetModel = resolveGeminiApiModel(options.model);
   const candidateModels: string[] = [
     targetModel,
-    ...(targetModel !== 'gemini-2.0-flash' ? ['gemini-2.0-flash'] : []),
-    ...(targetModel !== 'gemini-1.5-flash' ? ['gemini-1.5-flash'] : []),
+    ...(targetModel !== 'gemini-3.6-flash' ? ['gemini-3.6-flash'] : []),
+    ...(targetModel !== 'gemini-3.5-flash' ? ['gemini-3.5-flash'] : []),
+    ...(targetModel !== 'gemini-3.1-flash-lite' ? ['gemini-3.1-flash-lite'] : []),
   ];
 
   const { maskedText, imageMap } = maskImagesForAi(options.content);

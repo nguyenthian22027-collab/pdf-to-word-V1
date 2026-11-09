@@ -70,10 +70,12 @@ export function resolveGeminiApiModel(model?: string): string {
   if (
     !m ||
     m === 'auto' ||
-    m.startsWith('gemini-3.') ||
-    m === 'gemini-3-flash-preview'
+    m === 'gemini-2.0-flash' ||
+    m === 'gemini-1.5-flash' ||
+    m === 'gemini-1.5-pro' ||
+    m === 'gemini-2.5-flash'
   ) {
-    return 'gemini-2.0-flash';
+    return 'gemini-3.6-flash';
   }
   return model!;
 }

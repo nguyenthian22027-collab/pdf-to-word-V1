@@ -18,16 +18,13 @@ import { checkMultipleApiKeysHealth, parseApiKeys } from './apiHealthService';
 import './ApiSettingsModal.css';
 
 export const OCR_MODEL_OPTIONS: Array<{ id: GeminiModel; label: string }> = [
-  { id: 'gemini-2.0-flash', label: '💎 gemini-2.0-flash (Khuyên dùng - Chuẩn Google AI Studio, Ổn định & Nhanh)' },
-  { id: 'gemini-1.5-flash', label: '🔷 gemini-1.5-flash (Chuẩn Google, Quota lớn)' },
-  { id: 'gemini-1.5-pro', label: '🧠 gemini-1.5-pro (Đọc đề chữ mờ / khó)' },
-  { id: 'gemini-3.7-flash', label: '🌟 gemini-3.7-flash (Tự động tối ưu qua Engine 2.0)' },
-  { id: 'gemini-3.8-flash', label: '🚀 gemini-3.8-flash (Tự động tối ưu qua Engine 2.0)' },
-  { id: 'gemini-3.5-flash', label: '✨ gemini-3.5-flash (Tự động tối ưu qua Engine 2.0)' },
-  { id: 'gemini-3.6-flash', label: '💥 gemini-3.6-flash (Tự động tối ưu qua Engine 2.0)' },
-  { id: 'gemini-3.0-flash', label: '⚡ gemini-3.0-flash (Tự động tối ưu qua Engine 2.0)' },
-  { id: 'gemini-3.1-flash-lite', label: '⚡ gemini-3.1-flash-lite (Tự động tối ưu qua Engine 2.0)' },
-  { id: 'auto', label: '🔄 Tự động xoay vòng Model (Auto Failover)' },
+  { id: 'gemini-3.6-flash', label: '🚀 gemini-3.6-flash (Khuyên dùng - Cực Nhanh & Ổn Định Nhất)' },
+  { id: 'gemini-3.5-flash', label: '💎 gemini-3.5-flash (Chuẩn Google AI Studio 2026)' },
+  { id: 'gemini-3.7-flash', label: '🌟 gemini-3.7-flash (Thế hệ mới / Tự động chuyển tiếp nếu quá tải)' },
+  { id: 'gemini-3.8-flash', label: '⚡ gemini-3.8-flash (Thế hệ 3.8 / Tự động chuyển tiếp nếu quá tải)' },
+  { id: 'gemini-3.1-flash-lite', label: '✨ gemini-3.1-flash-lite (Hạn ngạch Quota cao)' },
+  { id: 'gemini-3.0-flash', label: '🔷 gemini-3.0-flash (Thế hệ 3.0)' },
+  { id: 'auto', label: '🔄 Tự động xoay vòng Model (Auto Fallback)' },
 ];
 
 export interface ApiSettingsModalProps {

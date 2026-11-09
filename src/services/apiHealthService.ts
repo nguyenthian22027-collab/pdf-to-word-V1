@@ -27,7 +27,7 @@ export function maskApiKey(key: string): string {
 export async function checkSingleApiKeyHealth(
   apiKey: string,
   keyIndex: number = 0,
-  testModel: string = 'gemini-2.0-flash',
+  testModel: string = 'gemini-3.6-flash',
 ): Promise<ApiKeyHealthResult> {
   const cleanKey = apiKey.trim();
   const maskedKey = maskApiKey(cleanKey);
@@ -87,9 +87,9 @@ export async function checkSingleApiKeyHealth(
       errMsg = response.statusText;
     }
 
-    if (response.status === 404 && model !== 'gemini-2.0-flash') {
+    if ((response.status === 404 || response.status === 503) && model !== 'gemini-3.6-flash') {
       try {
-        const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(cleanKey)}`;
+        const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${encodeURIComponent(cleanKey)}`;
         const fallbackResp = await fetch(fallbackUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -102,7 +102,7 @@ export async function checkSingleApiKeyHealth(
             maskedKey,
             fullKey: cleanKey,
             status: 'success',
-            message: `Key hoạt động tốt trên Gemini 2.0 (Model ${model} chưa mở cho key này)`,
+            message: `Key hoạt động xuất sắc trên Gemini 3.6 (Model ${model} tạm quá tải)`,
             latencyMs: fallbackLatency,
           };
         }
@@ -134,12 +134,15 @@ export async function checkSingleApiKeyHealth(
     }
 
     if (response.status === 400) {
+      const isBadKey = /api key not valid|invalid api key|api_key_invalid/i.test(errMsg);
       return {
         keyIndex,
         maskedKey,
         fullKey: cleanKey,
-        status: 'api_error',
-        message: `Lỗi yêu cầu (400 Bad Request): ${errMsg || 'Cú pháp không hợp lệ'}`,
+        status: 'auth_error',
+        message: isBadKey
+          ? 'API Key không hợp lệ. Vui lòng kiểm tra lại chuỗi key (phải bắt đầu bằng AIzaSy...).'
+          : `Lỗi yêu cầu (400 Bad Request): ${errMsg}`,
         latencyMs,
       };
     }
@@ -193,7 +196,7 @@ export async function checkSingleApiKeyHealth(
  */
 export async function checkMultipleApiKeysHealth(
   apiKeys: string[],
-  testModel: string = 'gemini-2.0-flash',
+  testModel: string = 'gemini-3.6-flash',
 ): Promise<ApiKeyHealthResult[]> {
   const promises = apiKeys.map((key, index) =>
     checkSingleApiKeyHealth(key, index, testModel),

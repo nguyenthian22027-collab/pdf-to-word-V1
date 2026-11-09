@@ -7,8 +7,10 @@ import { resolveGeminiApiModel } from './types';
  * Danh sách model mặc định khi người dùng chọn 'auto' (Tự động xoay vòng theo thứ tự từ mạnh đến ổn định)
  */
 export const CANDIDATE_AUTO_MODELS: GeminiModel[] = [
-  'gemini-2.0-flash',
-  'gemini-1.5-flash',
+  'gemini-3.6-flash',
+  'gemini-3.5-flash',
+  'gemini-3.7-flash',
+  'gemini-3.8-flash',
 ];
 
 /**
@@ -36,8 +38,8 @@ export async function callGeminiWithFailover({
       ? CANDIDATE_AUTO_MODELS
       : [
           targetModel,
-          ...(targetModel !== 'gemini-2.0-flash' ? ['gemini-2.0-flash'] : []),
-          ...(targetModel !== 'gemini-1.5-flash' ? ['gemini-1.5-flash'] : []),
+          ...(targetModel !== 'gemini-3.6-flash' ? ['gemini-3.6-flash'] : []),
+          ...(targetModel !== 'gemini-3.5-flash' ? ['gemini-3.5-flash'] : []),
         ];
 
   const contents = [
