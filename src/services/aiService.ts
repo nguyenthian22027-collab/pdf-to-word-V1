@@ -1,5 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import type { OcrEngine, OcrModel } from '../types';
+import { resolveGeminiApiModel } from '../types';
 import { cropDocumentFiguresWithBackend, cropImageDataUrlPrecise } from './pdfUtils';
 
 const MAX_INLINE_FILE_BYTES = 50 * 1024 * 1024;
@@ -107,15 +108,12 @@ export async function processOriginalDocument(
   if (allKeys.length === 0) throw new Error('Chưa nhập Gemini API key.');
   if (options.sourceFiles.length === 0) throw new Error('Chưa có file nguồn để OCR.');
 
-  const candidateModels: string[] =
-    options.model === 'auto'
-      ? ['gemini-3.7-flash', 'gemini-3.8-flash', 'gemini-2.0-flash', 'gemini-1.5-flash']
-      : [
-          options.model,
-          ...(options.model !== 'gemini-2.0-flash' && options.model !== 'gemini-1.5-flash'
-            ? (['gemini-2.0-flash', 'gemini-1.5-flash'] as OcrModel[])
-            : []),
-        ];
+  const targetModel = resolveGeminiApiModel(options.model) as OcrModel;
+  const candidateModels: OcrModel[] = [
+    targetModel,
+    ...(targetModel !== 'gemini-2.0-flash' ? ['gemini-2.0-flash' as OcrModel] : []),
+    ...(targetModel !== 'gemini-1.5-flash' ? ['gemini-1.5-flash' as OcrModel] : []),
+  ];
 
   const inputParts = await buildInputParts(options);
   const basePrompt = options.engine === 'gemini' ? GEMINI_DOCUMENT_PROMPT : GEMMA_DOCUMENT_PROMPT;
@@ -252,7 +250,7 @@ export async function refineDocumentImageMarkers(
   const pages = [...groups.keys()].sort((a, b) => a - b);
   if (pages.length === 0) return options.markdown;
 
-  const modelToUse = options.model === 'auto' ? 'gemini-3.7-flash' : options.model;
+  const modelToUse = resolveGeminiApiModel(options.model);
   const replacements = new Map<string, string>();
   let currentKeyIdx = 0;
 
@@ -910,12 +908,11 @@ export async function aiOptimizeAndFixLatex(options: AiOptimizeLatexOptions): Pr
   if (allKeys.length === 0) throw new Error('Chưa nhập Gemini API key. Hãy vào Cài đặt API & Models để nhập key.');
   if (!options.content.trim()) return options.content;
 
-  const modelToUse = options.model === 'auto' || !options.model ? 'gemini-3.7-flash' : options.model;
+  const targetModel = resolveGeminiApiModel(options.model);
   const candidateModels: string[] = [
-    modelToUse,
-    ...(modelToUse !== 'gemini-2.0-flash' && modelToUse !== 'gemini-1.5-flash'
-      ? ['gemini-2.0-flash', 'gemini-1.5-flash']
-      : []),
+    targetModel,
+    ...(targetModel !== 'gemini-2.0-flash' ? ['gemini-2.0-flash'] : []),
+    ...(targetModel !== 'gemini-1.5-flash' ? ['gemini-1.5-flash'] : []),
   ];
 
   const { maskedText, imageMap } = maskImagesForAi(options.content);

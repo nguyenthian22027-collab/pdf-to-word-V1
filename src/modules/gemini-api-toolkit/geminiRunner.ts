@@ -1,14 +1,14 @@
 import { GoogleGenAI } from '@google/genai';
 import { parseApiKeys } from './apiHealthService';
 import type { CallGeminiOptions, GeminiModel } from './types';
+import { resolveGeminiApiModel } from './types';
 
 /**
  * Danh sách model mặc định khi người dùng chọn 'auto' (Tự động xoay vòng theo thứ tự từ mạnh đến ổn định)
  */
 export const CANDIDATE_AUTO_MODELS: GeminiModel[] = [
-  'gemini-3.7-flash',
-  'gemini-3.8-flash',
   'gemini-2.0-flash',
+  'gemini-1.5-flash',
 ];
 
 /**
@@ -30,10 +30,15 @@ export async function callGeminiWithFailover({
     throw new Error('Chưa nhập Gemini API Key. Hãy cấu hình API Key trước khi sử dụng.');
   }
 
+  const targetModel = resolveGeminiApiModel(model);
   const candidateModels: string[] =
     model === 'auto'
       ? CANDIDATE_AUTO_MODELS
-      : [model];
+      : [
+          targetModel,
+          ...(targetModel !== 'gemini-2.0-flash' ? ['gemini-2.0-flash'] : []),
+          ...(targetModel !== 'gemini-1.5-flash' ? ['gemini-1.5-flash'] : []),
+        ];
 
   const contents = [
     {

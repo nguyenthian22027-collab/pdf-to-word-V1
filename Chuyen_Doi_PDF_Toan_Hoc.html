@@ -316,8 +316,8 @@
 
     const state = {
       apiKey: localStorage.getItem('gemini_api_key') || '',
-      modelName: localStorage.getItem('gemini_model_name') || 'gemini-3.7-flash',
-      solveModelName: localStorage.getItem('gemini_solve_model') || 'gemini-3.7-flash',
+      modelName: localStorage.getItem('gemini_model_name') || 'gemini-2.0-flash',
+      solveModelName: localStorage.getItem('gemini_solve_model') || 'gemini-2.0-flash',
       previewUrls: [],
       fileNames: [],
       isProcessing: false,
@@ -402,11 +402,20 @@
     // ============================================================
     // LOGIC KIỂM TRA TỰ ĐỘNG CHUẨN GEMINI API
     // ============================================================
+    function resolveGeminiModel(m) {
+      if (!m || m === 'auto') return 'gemini-2.0-flash';
+      const clean = String(m).trim().toLowerCase();
+      if (clean.includes('3.8') || clean.includes('3.7') || clean.includes('3.6') || clean.includes('3.5') || clean.includes('3.0') || clean.includes('3.1')) {
+        return 'gemini-2.0-flash';
+      }
+      return m;
+    }
+
     async function testSingleApiKey(apiKey, requestedModel) {
-      // Danh sách các model fallback để tự động tìm model tốt nhất nếu 1 model chưa mở
-      const fallbackList = (requestedModel === 'auto')
-        ? ['gemini-3.7-flash', 'gemini-3.8-flash', 'gemini-2.0-flash', 'gemini-1.5-flash']
-        : [requestedModel, 'gemini-2.0-flash', 'gemini-1.5-flash'];
+      const resolved = resolveGeminiModel(requestedModel);
+      const fallbackList = [resolved];
+      if (resolved !== 'gemini-2.0-flash') fallbackList.push('gemini-2.0-flash');
+      if (resolved !== 'gemini-1.5-flash') fallbackList.push('gemini-1.5-flash');
 
       let lastErr = null;
       for (const m of fallbackList) {
@@ -902,11 +911,11 @@
     // HÀM GỌI API VỚI TÍNH NĂNG XOAY VÒNG KEY
     async function callGeminiWithRotation(base64Data, promptText, activeKeys, modelToUse) {
       let lastError = null;
+      const resolved = resolveGeminiModel(modelToUse);
       const modelsToTry = [
-        modelToUse,
-        ...(modelToUse !== 'gemini-2.0-flash' && modelToUse !== 'gemini-1.5-flash'
-          ? ['gemini-2.0-flash', 'gemini-1.5-flash']
-          : [])
+        resolved,
+        ...(resolved !== 'gemini-2.0-flash' ? ['gemini-2.0-flash'] : []),
+        ...(resolved !== 'gemini-1.5-flash' ? ['gemini-1.5-flash'] : [])
       ];
 
       for (const currentModel of modelsToTry) {
@@ -973,7 +982,7 @@
       emptyState.classList.add('hidden');
       resultEditor.value = '';
 
-      const modelToUse = (state.modelName === 'auto') ? 'gemini-3.7-flash' : (state.modelName || 'gemini-3.7-flash');
+      const modelToUse = resolveGeminiModel(state.modelName);
       let cumulativeText = '';
 
       for (let i = 0; i < state.previewUrls.length; i++) {

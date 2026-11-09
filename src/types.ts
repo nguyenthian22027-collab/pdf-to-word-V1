@@ -59,3 +59,21 @@ export interface OcrSettings {
   concurrency: number;
 }
 
+/**
+ * Chuẩn hóa tên Model Gemini gửi tới Google API.
+ * Các model ảo / tương lai (3.0, 3.1, 3.5, 3.6, 3.7, 3.8) hoặc 'auto' được tự động
+ * map sang model Google API chính thức mạnh nhất (gemini-2.0-flash)
+ * để đảm bảo không bao giờ bị lỗi 404 Not Found từ máy chủ Google.
+ */
+export function resolveGeminiApiModel(model?: string): string {
+  const m = (model || '').trim().toLowerCase();
+  if (
+    !m ||
+    m === 'auto' ||
+    m.startsWith('gemini-3.') ||
+    m === 'gemini-3-flash-preview'
+  ) {
+    return 'gemini-2.0-flash';
+  }
+  return model!;
+}

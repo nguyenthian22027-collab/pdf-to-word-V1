@@ -1,4 +1,5 @@
 import type { ApiKeyHealthResult } from '../types';
+import { resolveGeminiApiModel } from '../types';
 
 /**
  * Tách và làm sạch danh sách API Keys từ chuỗi nhập vào (phân tách bởi dòng mới, dấu phẩy, chấm phẩy hoặc khoảng trắng)
@@ -41,8 +42,8 @@ export async function checkSingleApiKeyHealth(
     };
   }
 
-  // Model dùng để test ping nhẹ nhất
-  const model = testModel === 'auto' ? 'gemini-2.0-flash' : testModel;
+  // Model dùng để test ping nhẹ nhất (tự động chuẩn hóa model khả dụng thực tế trên Google AI API)
+  const model = resolveGeminiApiModel(testModel);
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(cleanKey)}`;
 
   const payload = {

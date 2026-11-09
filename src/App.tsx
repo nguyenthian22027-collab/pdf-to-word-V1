@@ -88,54 +88,54 @@ interface StoredSettings {
 
 const GEMINI_MODELS: Array<{ id: GeminiModel; label: string; hint: string }> = [
   {
-    id: 'gemini-3.8-flash',
-    label: '🚀 Gemini 3.8 Flash (Thế hệ 3.8 Mới Nhất / Đỉnh Cao)',
-    hint: 'Thế hệ 3.8 mới nhất của Google, suy luận đa bước cực mạnh và nhận diện chuẩn xác nhất',
-  },
-  {
-    id: 'gemini-3.7-flash',
-    label: '🌟 Gemini 3.7 Flash (Mặc Định / Siêu Nhanh & Chuẩn)',
-    hint: 'Thế hệ 3.7 tối ưu nhận diện công thức Toán và bố cục phức tạp',
-  },
-  {
-    id: 'gemini-3.6-flash',
-    label: '💥 Gemini 3.6 Flash (Mới ra mắt)',
-    hint: 'Ưu tiên chất lượng OCR và độ chính xác cao',
-  },
-  {
-    id: 'gemini-3.5-flash',
-    label: '🌟 Gemini 3.5 Flash',
-    hint: 'Chất lượng OCR cao và phân tích hình ảnh tốt',
-  },
-  {
-    id: 'gemini-3.0-flash',
-    label: '🚀 Gemini 3.0 Flash (Thế hệ 3.0)',
-    hint: 'Tốc độ nhanh, phù hợp đa số tài liệu',
-  },
-  {
-    id: 'gemini-3.1-flash-lite',
-    label: '⚡ Gemini 3.1 Flash-Lite (Quota cao)',
-    hint: 'Nhanh, tiết kiệm cho tài liệu nhiều trang',
-  },
-  {
     id: 'gemini-2.0-flash',
-    label: '💎 Gemini 2.0 Flash (Ổn định, Đọc toán tốt)',
-    hint: 'Model ổn định lâu năm, nhận diện LaTeX xuất sắc',
+    label: '💎 Gemini 2.0 Flash (Khuyên dùng - Chuẩn Google AI Studio)',
+    hint: 'Model chính thức của Google, nhận diện LaTeX và toán học chuẩn xác, tốc độ cao nhất',
   },
   {
     id: 'gemini-1.5-flash',
-    label: '🔷 Gemini 1.5 Flash (Chuẩn Google)',
-    hint: 'Model kinh điển tốc độ cao',
+    label: '🔷 Gemini 1.5 Flash (Chuẩn Google, Quota lớn)',
+    hint: 'Model kinh điển tốc độ cao, hạn ngạch xử lý tài liệu lớn',
   },
   {
     id: 'gemini-1.5-pro',
-    label: '🧠 Gemini 1.5 Pro (Đọc đề chữ mờ / khó)',
+    label: '🧠 Gemini 1.5 Pro (Đọc đề chữ mờ / scan khó)',
     hint: 'Đọc kỹ, phù hợp bản scan mờ hoặc chữ viết tay',
+  },
+  {
+    id: 'gemini-3.7-flash',
+    label: '🌟 Gemini 3.7 Flash (Tự động tối ưu qua Engine 2.0)',
+    hint: 'Tự động ánh xạ qua Engine Gemini 2.0 Flash để luôn hoạt động mượt mà không lỗi 404',
+  },
+  {
+    id: 'gemini-3.8-flash',
+    label: '🚀 Gemini 3.8 Flash (Tự động tối ưu qua Engine 2.0)',
+    hint: 'Tự động ánh xạ qua Engine Gemini 2.0 Flash để luôn hoạt động mượt mà không lỗi 404',
+  },
+  {
+    id: 'gemini-3.5-flash',
+    label: '✨ Gemini 3.5 Flash (Tự động tối ưu qua Engine 2.0)',
+    hint: 'Tự động ánh xạ qua Engine Gemini 2.0 Flash để luôn hoạt động mượt mà không lỗi 404',
+  },
+  {
+    id: 'gemini-3.6-flash',
+    label: '💥 Gemini 3.6 Flash (Tự động tối ưu qua Engine 2.0)',
+    hint: 'Tự động ánh xạ qua Engine Gemini 2.0 Flash để luôn hoạt động mượt mà không lỗi 404',
+  },
+  {
+    id: 'gemini-3.0-flash',
+    label: '⚡ Gemini 3.0 Flash (Tự động tối ưu qua Engine 2.0)',
+    hint: 'Tốc độ nhanh, tự động ánh xạ qua Engine 2.0 Flash',
+  },
+  {
+    id: 'gemini-3.1-flash-lite',
+    label: '⚡ Gemini 3.1 Flash-Lite (Tự động tối ưu qua Engine 2.0)',
+    hint: 'Tiết kiệm, tự động ánh xạ qua Engine 2.0 Flash',
   },
   {
     id: 'auto',
     label: '🔄 Tự động xoay vòng Model (Auto Fallback)',
-    hint: 'Tự động thử lần lượt Gemini 3.7 → 3.5 → 3.0 → 2.0 khi gặp lỗi',
+    hint: 'Tự động luân chuyển Gemini 2.0 Flash → Gemini 1.5 Flash đảm bảo 100% tài liệu được xử lý',
   },
 ];
 
@@ -155,10 +155,10 @@ export default function App() {
 
   const [engine, setEngine] = useState<OcrEngine>(stored.engine ?? 'gemini');
   const [geminiModel, setGeminiModel] = useState<GeminiModel>(
-    stored.geminiModel ?? 'gemini-3.7-flash',
+    stored.geminiModel ?? 'gemini-2.0-flash',
   );
   const [mathModel, setMathModel] = useState<MathSolverModel>(
-    stored.mathModel ?? 'gemini-3.7-flash',
+    stored.mathModel ?? 'gemini-2.0-flash',
   );
 
   const [maxPages, setMaxPages] = useState(stored.maxPages ?? 30);

@@ -1,3 +1,5 @@
+export { resolveGeminiApiModel } from '../../types';
+
 export type ApiKeyHealthStatus =
   | 'success'
   | 'rate_limit'

@@ -1,4 +1,5 @@
 import type { ApiKeyHealthResult } from './types';
+import { resolveGeminiApiModel } from './types';
 
 /**
  * Tách và làm sạch danh sách API Keys từ chuỗi nhập vào
@@ -42,7 +43,7 @@ export async function checkSingleApiKeyHealth(
     };
   }
 
-  const model = testModel === 'auto' ? 'gemini-2.0-flash' : testModel;
+  const model = resolveGeminiApiModel(testModel);
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(cleanKey)}`;
 
   const payload = {

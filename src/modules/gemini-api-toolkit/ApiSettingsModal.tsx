@@ -18,15 +18,15 @@ import { checkMultipleApiKeysHealth, parseApiKeys } from './apiHealthService';
 import './ApiSettingsModal.css';
 
 export const OCR_MODEL_OPTIONS: Array<{ id: GeminiModel; label: string }> = [
-  { id: 'gemini-3.8-flash', label: '🚀 gemini-3.8-flash (Thế hệ 3.8 Mới Nhất)' },
-  { id: 'gemini-3.7-flash', label: '🌟 gemini-3.7-flash (Mặc Định / Siêu Nhanh & Chuẩn)' },
-  { id: 'gemini-3.5-flash', label: '🌟 gemini-3.5-flash (Thế hệ 3.5)' },
-  { id: 'gemini-3.0-flash', label: '🚀 gemini-3.0-flash (Thế hệ 3.0 Siêu Nhanh)' },
-  { id: 'gemini-3.1-flash-lite', label: '⚡ gemini-3.1-flash-lite (Hạn ngạch Quota cực cao)' },
-  { id: 'gemini-3.6-flash', label: '💥 gemini-3.6-flash (Tối ưu)' },
-  { id: 'gemini-2.0-flash', label: '💎 gemini-2.0-flash (Ổn định, Đọc tài liệu cực tốt)' },
-  { id: 'gemini-1.5-flash', label: '🔷 gemini-1.5-flash (Chuẩn Google)' },
-  { id: 'gemini-1.5-pro', label: '🧠 gemini-1.5-pro (Độ chính xác cao)' },
+  { id: 'gemini-2.0-flash', label: '💎 gemini-2.0-flash (Khuyên dùng - Chuẩn Google AI Studio, Ổn định & Nhanh)' },
+  { id: 'gemini-1.5-flash', label: '🔷 gemini-1.5-flash (Chuẩn Google, Quota lớn)' },
+  { id: 'gemini-1.5-pro', label: '🧠 gemini-1.5-pro (Đọc đề chữ mờ / khó)' },
+  { id: 'gemini-3.7-flash', label: '🌟 gemini-3.7-flash (Tự động tối ưu qua Engine 2.0)' },
+  { id: 'gemini-3.8-flash', label: '🚀 gemini-3.8-flash (Tự động tối ưu qua Engine 2.0)' },
+  { id: 'gemini-3.5-flash', label: '✨ gemini-3.5-flash (Tự động tối ưu qua Engine 2.0)' },
+  { id: 'gemini-3.6-flash', label: '💥 gemini-3.6-flash (Tự động tối ưu qua Engine 2.0)' },
+  { id: 'gemini-3.0-flash', label: '⚡ gemini-3.0-flash (Tự động tối ưu qua Engine 2.0)' },
+  { id: 'gemini-3.1-flash-lite', label: '⚡ gemini-3.1-flash-lite (Tự động tối ưu qua Engine 2.0)' },
   { id: 'auto', label: '🔄 Tự động xoay vòng Model (Auto Failover)' },
 ];
 

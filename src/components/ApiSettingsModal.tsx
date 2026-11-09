@@ -40,26 +40,26 @@ interface Props {
 }
 
 export const OCR_MODEL_OPTIONS: Array<{ id: GeminiModel; label: string }> = [
-  { id: 'gemini-3.8-flash', label: '🚀 gemini-3.8-flash (Mới Nhất / Thế hệ 3.8 Đỉnh Cao)' },
-  { id: 'gemini-3.7-flash', label: '🌟 gemini-3.7-flash (Mặc Định / Siêu Nhanh & Chuẩn)' },
-  { id: 'gemini-3.5-flash', label: '🌟 gemini-3.5-flash (Thế hệ mới 2026)' },
-  { id: 'gemini-3.0-flash', label: '🚀 gemini-3.0-flash (Thế hệ 3.0 Siêu Nhanh)' },
-  { id: 'gemini-3.1-flash-lite', label: '⚡ gemini-3.1-flash-lite (Hạn ngạch Quota cực cao)' },
-  { id: 'gemini-3.6-flash', label: '💥 gemini-3.6-flash (Mới ra mắt)' },
-  { id: 'gemini-2.0-flash', label: '💎 gemini-2.0-flash (Ổn định, Đọc toán cực tốt)' },
-  { id: 'gemini-1.5-flash', label: '🔷 gemini-1.5-flash (Chuẩn Google)' },
+  { id: 'gemini-2.0-flash', label: '💎 gemini-2.0-flash (Khuyên dùng - Chuẩn Google AI Studio, Ổn định & Nhanh)' },
+  { id: 'gemini-1.5-flash', label: '🔷 gemini-1.5-flash (Chuẩn Google, Quota lớn)' },
   { id: 'gemini-1.5-pro', label: '🧠 gemini-1.5-pro (Đọc đề chữ mờ / khó)' },
+  { id: 'gemini-3.7-flash', label: '🌟 gemini-3.7-flash (Tự động tối ưu qua Engine 2.0)' },
+  { id: 'gemini-3.8-flash', label: '🚀 gemini-3.8-flash (Tự động tối ưu qua Engine 2.0)' },
+  { id: 'gemini-3.5-flash', label: '✨ gemini-3.5-flash (Tự động tối ưu qua Engine 2.0)' },
+  { id: 'gemini-3.6-flash', label: '💥 gemini-3.6-flash (Tự động tối ưu qua Engine 2.0)' },
+  { id: 'gemini-3.0-flash', label: '⚡ gemini-3.0-flash (Tự động tối ưu qua Engine 2.0)' },
+  { id: 'gemini-3.1-flash-lite', label: '⚡ gemini-3.1-flash-lite (Tự động tối ưu qua Engine 2.0)' },
   { id: 'auto', label: '🔄 Tự động xoay vòng Model (Auto Fallback)' },
 ];
 
 export const MATH_MODEL_OPTIONS: Array<{ id: MathSolverModel; label: string }> = [
-  { id: 'gemini-3.8-flash', label: 'gemini-3.8-flash (Mới Nhất)' },
-  { id: 'gemini-3.7-flash', label: 'gemini-3.7-flash (Mặc Định)' },
-  { id: 'gemini-3.6-flash', label: 'gemini-3.6-flash' },
-  { id: 'gemini-3.5-flash', label: 'gemini-3.5-flash' },
-  { id: 'gemini-3.0-flash', label: 'gemini-3.0-flash' },
-  { id: 'gemini-2.0-flash', label: 'gemini-2.0-flash' },
-  { id: 'gemini-1.5-pro', label: 'gemini-1.5-pro' },
+  { id: 'gemini-2.0-flash', label: 'gemini-2.0-flash (Khuyên dùng - Ổn định)' },
+  { id: 'gemini-1.5-pro', label: 'gemini-1.5-pro (Suy luận sâu)' },
+  { id: 'gemini-3.7-flash', label: 'gemini-3.7-flash (Tự động tối ưu Engine 2.0)' },
+  { id: 'gemini-3.8-flash', label: 'gemini-3.8-flash (Tự động tối ưu Engine 2.0)' },
+  { id: 'gemini-3.6-flash', label: 'gemini-3.6-flash (Tự động tối ưu Engine 2.0)' },
+  { id: 'gemini-3.5-flash', label: 'gemini-3.5-flash (Tự động tối ưu Engine 2.0)' },
+  { id: 'gemini-3.0-flash', label: 'gemini-3.0-flash (Tự động tối ưu Engine 2.0)' },
 ];
 
 export function ApiSettingsModal({
@@ -68,7 +68,7 @@ export function ApiSettingsModal({
   rawApiKeyText,
   onSave,
   currentGeminiModel,
-  currentMathModel = 'gemini-3.7-flash',
+  currentMathModel = 'gemini-2.0-flash',
   currentMaxPages = 30,
   currentCustomPrompt = '',
 }: Props) {
